@@ -7,14 +7,12 @@ use Concatenation;
 use Converse;
 
 pub trait RelationTabular
-where Self::X: Eq + PartialEq<Self::Y>,
-      Self::Y: Eq + PartialEq<Self::X>,
+where Self::X: Eq + PartialEq<Self::Y> + std::fmt::Debug,
+      Self::Y: Eq + PartialEq<Self::X> + std::fmt::Debug,
 {
 	type X;
 	type Y;
-
 	fn get_domain(&self) -> (&[Self::X], &[Self::Y]);
-
 	fn eval_at(&self, ix: usize, iy: usize) -> bool;
 }
 
@@ -27,8 +25,8 @@ macro_rules! cross_uniq {
 
 impl<T, X, Y> Relation for T
 where T: RelationTabular<X=X, Y=Y>,
-      X: PartialEq<Y> + Eq,
-      Y: PartialEq<X> + Eq,
+      X: PartialEq<Y> + Eq + std::fmt::Debug,
+      Y: PartialEq<X> + Eq + std::fmt::Debug,
 {
 	type X = X;
 	type Y = Y;
@@ -182,87 +180,170 @@ where T: RelationTabular<X=X, Y=Y>,
 	//fn is_function(&self) -> bool;
 }
 
-impl<P, Q, X, Y> RelationTabular for Union<P, Q, X, Y>
-where P: Relation<X=X, Y=Y>,
-      Q: Relation<X=X, Y=Y>,
-      X: PartialEq<Y> + Eq,
-      Y: PartialEq<X> + Eq,
+impl<'a, P, Q, XX, YY> RelationTabular for Union<'a, P, Q, XX, YY>
+where P: RelationTabular<X=XX, Y=YY>,
+      Q: RelationTabular<X=XX, Y=YY>,
+      XX: PartialEq<YY> + Eq + std::fmt::Debug,
+      YY: PartialEq<XX> + Eq + std::fmt::Debug,
 {
-	type X = X;
-	type Y = Y;
+	type X = XX;
+	type Y = YY;
 	fn get_domain(&self) -> (&[Self::X], &[Self::Y]) { self.p.get_domain() }
 	fn eval_at(&self, ix: usize, iy: usize) -> bool { self.p.eval_at(ix, iy) || self.q.eval_at(ix, iy) }
 }
-//impl<T: RelationTabular> PartialEq<T> for Union<T> {
-impl<T, P, Q, X, Y> PartialEq<T> for Union<P, Q, X, Y>
-where T: RelationTabular,
-      P: Relation<X=X, Y=Y>,
-      Q: Relation<X=X, Y=Y>,
-      X: PartialEq<Y> + Eq,
-      Y: PartialEq<X> + Eq,
+impl<'a, R, P, Q, XX, YY> PartialEq<R> for Union<'a, P, Q, XX, YY>
+where R: RelationTabular<X=XX, Y=YY>,
+      P: RelationTabular<X=XX, Y=YY>,
+      Q: RelationTabular<X=XX, Y=YY>,
+      XX: PartialEq<YY> + Eq + std::fmt::Debug,
+      YY: PartialEq<XX> + Eq + std::fmt::Debug,
 {
-	fn eq(&self, other: &T) -> bool {
+	fn eq(&self, other: &R) -> bool {
 		self.get_domain() == other.get_domain() && cross!(0..self.get_domain().0.len(), 0..self.get_domain().1.len()).all(
 			|(ix, iy)| self.eval_at(ix, iy) == other.eval_at(ix, iy)
 		)
 	}
 }
 
-impl<T: RelationTabular> RelationTabular for Intersection<T> {
-	type X = T::X;
-	type Y = T::Y;
+impl<'a, P, Q, XX, YY> RelationTabular for Intersection<'a, P, Q, XX, YY>
+where P: RelationTabular<X=XX, Y=YY>,
+      Q: RelationTabular<X=XX, Y=YY>,
+      XX: PartialEq<YY> + Eq + std::fmt::Debug,
+      YY: PartialEq<XX> + Eq + std::fmt::Debug,
+{
+	type X = XX;
+	type Y = YY;
 	fn get_domain(&self) -> (&[Self::X], &[Self::Y]) { self.p.get_domain() }
 	fn eval_at(&self, ix: usize, iy: usize) -> bool { self.p.eval_at(ix, iy) && self.q.eval_at(ix, iy) }
 }
-impl<T: RelationTabular> PartialEq<T> for Intersection<T> {
-	fn eq(&self, other: &T) -> bool {
+impl<'a, R, P, Q, XX, YY> PartialEq<R> for Intersection<'a, P, Q, XX, YY>
+where R: RelationTabular<X=XX, Y=YY>,
+      P: RelationTabular<X=XX, Y=YY>,
+      Q: RelationTabular<X=XX, Y=YY>,
+      XX: PartialEq<YY> + Eq + std::fmt::Debug,
+      YY: PartialEq<XX> + Eq + std::fmt::Debug,
+{
+	fn eq(&self, other: &R) -> bool {
 		self.get_domain() == other.get_domain() && cross!(0..self.get_domain().0.len(), 0..self.get_domain().1.len()).all(
 			|(ix, iy)| self.eval_at(ix, iy) == other.eval_at(ix, iy)
 		)
 	}
 }
 
-impl<T: RelationTabular> RelationTabular for Complement<T> {
-	type X = T::X;
-	type Y = T::Y;
+impl<'a, R: 'a + RelationTabular> RelationTabular for Complement<'a, R> {
+	type X = R::X;
+	type Y = R::Y;
 	fn get_domain(&self) -> (&[Self::X], &[Self::Y]) { self.r.get_domain() }
 	fn eval_at(&self, ix: usize, iy: usize) -> bool { !self.r.eval_at(ix, iy) }
 }
-impl<T: RelationTabular> PartialEq<T> for Complement<T> {
-	fn eq(&self, other: &T) -> bool {
+impl<'a, R: 'a + RelationTabular> PartialEq<R> for Complement<'a, R> {
+	fn eq(&self, other: &R) -> bool {
 		self.get_domain() == other.get_domain() && cross!(0..self.get_domain().0.len(), 0..self.get_domain().1.len()).all(
 			|(ix, iy)| self.eval_at(ix, iy) == other.eval_at(ix, iy)
 		)
 	}
 }
 
-impl<T: RelationTabular> RelationTabular for Converse<T> {
-	type X = T::X;
-	type Y = T::Y;
+impl<'a, R: 'a + RelationTabular> RelationTabular for Converse<'a, R> {
+	type X = R::X;
+	type Y = R::Y;
 	fn get_domain(&self) -> (&[Self::X], &[Self::Y]) { self.r.get_domain() }
 	fn eval_at(&self, ix: usize, iy: usize) -> bool { self.r.eval_at(iy, ix) }
 }
-impl<T: RelationTabular> PartialEq<T> for Converse<T> {
-	fn eq(&self, other: &T) -> bool {
+impl<'a, R: 'a + RelationTabular> PartialEq<R> for Converse<'a, R> {
+	fn eq(&self, other: &R) -> bool {
 		self.get_domain() == other.get_domain() && cross!(0..self.get_domain().0.len(), 0..self.get_domain().1.len()).all(
 			|(ix, iy)| self.eval_at(ix, iy) == other.eval_at(ix, iy)
 		)
 	}
 }
 
-impl<T: RelationTabular> RelationTabular for Concatenation<T> {
-	type X = T::X;
-	type Y = T::Y;
-	fn get_domain(&self) -> (&[Self::X], &[Self::Y]) { self.p.get_domain() }
+impl<'a, P, Q, XX, YY, ZZ> RelationTabular for Concatenation<'a, P, Q, XX, YY, ZZ>
+where P: RelationTabular<X=XX, Y=YY>,
+      Q: RelationTabular<X=YY, Y=ZZ>,
+      XX: PartialEq<YY> + PartialEq<ZZ> + Eq + std::fmt::Debug,
+      YY: PartialEq<XX> + PartialEq<ZZ> + Eq + std::fmt::Debug,
+      ZZ: PartialEq<XX> + PartialEq<YY> + Eq + std::fmt::Debug,
+{
+	type X = XX;
+	type Y = ZZ;
+	fn get_domain(&self) -> (&[Self::X], &[Self::Y]) { (self.p.get_domain().0, self.q.get_domain().1) }
 	fn eval_at(&self, ix: usize, iy: usize) -> bool {
 		self.p.eval_at(ix, iy) && (0..self.q.get_domain().1.len()).any(|iz| self.q.eval_at(iy, iz))
 	}
 }
-impl<T: RelationTabular> PartialEq<T> for Concatenation<T> {
-	fn eq(&self, other: &T) -> bool {
+impl<'a, R, P, Q, XX, YY, ZZ> PartialEq<R> for Concatenation<'a, P, Q, XX, YY, ZZ>
+where R: RelationTabular<X=XX, Y=ZZ>,
+      P: RelationTabular<X=XX, Y=YY>,
+      Q: RelationTabular<X=YY, Y=ZZ>,
+      XX: PartialEq<YY> + PartialEq<ZZ> + Eq + std::fmt::Debug,
+      YY: PartialEq<XX> + PartialEq<ZZ> + Eq + std::fmt::Debug,
+      ZZ: PartialEq<XX> + PartialEq<YY> + Eq + std::fmt::Debug,
+{
+	fn eq(&self, other: &R) -> bool {
 		self.get_domain() == other.get_domain() && cross!(0..self.get_domain().0.len(), 0..self.get_domain().1.len()).all(
 			|(ix, iy)| self.eval_at(ix, iy) == other.eval_at(ix, iy)
 		)
 	}
 }
 
+pub mod tests {
+	use super::*;
+
+	pub fn union<R>(neutral: &R, absorbing: &R, a: &R, b: &R, c: &R)
+	where R: RelationTabular + std::fmt::Debug
+	{
+		let r = a;
+		assert!(r.is_homogeneous());
+
+		// union: neutral element
+		assert_eq!(R::union(r, neutral), *r);
+		// union: absorbing element
+		assert_eq!(R::union(r, absorbing), *absorbing);
+		// union: idempotence
+		assert_eq!(R::union(r, r), *r);
+		// union: associativity
+		assert_eq!(
+			R::union(a, &R::union(b, c)),
+			R::union(&R::union(a, b), c),
+		);
+		// union: commutativity
+		assert_eq!(R::union(a, b), R::union(b, a));
+	}
+
+	fn intersection<R>(neutral: &R, absorbing: &R, a: &R, b: &R, c: &R)
+	where R: RelationTabular + std::fmt::Debug
+	{
+		let r = a;
+		assert!(r.is_homogeneous());
+
+		// intersection: neutral element
+		assert_eq!(R::intersection(r, neutral), *r);
+		// intersection: absorbing element
+		assert_eq!(R::intersection(r, absorbing), *absorbing);
+		// intersection: idempotence
+		assert_eq!(R::intersection(r, r), *r);
+		// intersection: associativity
+		assert_eq!(
+			R::intersection(a, &R::intersection(b, c)),
+			R::intersection(&R::intersection(a, b), c)
+		);
+		// intersection: commutativity
+		assert_eq!(R::intersection(a, b), R::intersection(b, a));
+	}
+
+	fn distributivity_union_intersection<R>(a: &R, b: &R, c: &R)
+	where R: RelationTabular + std::fmt::Debug
+	{
+		// left distributivity (union, intersection)
+		assert_eq!(
+			R::intersection(a, &R::union(b, c)),
+			R::union(&R::intersection(a, b), &R::intersection(a, c)),
+		);
+		// right distributivity (union, intersection)
+		assert_eq!(
+			R::intersection(&R::union(a, b), c),
+			R::union(&R::intersection(a, b), &R::intersection(a, c)),
+		);
+	}
+}

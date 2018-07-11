@@ -207,44 +207,42 @@ fn new_endorelation() {
 
 	assert_eq!(
 		RelationVec::<char,char>::union(
-			RelationVec::new_top(domain),
-			RelationVec::new_bottom(domain)
+			&RelationVec::new_top(domain),
+			&RelationVec::new_bottom(domain)
 		),
 		RelationVec::new_full(domain)
 	);
 	assert_eq!(
 		RelationVec::<char,char>::intersection(
-			RelationVec::new_top(domain),
-			RelationVec::new_bottom(domain)
+			&RelationVec::new_top(domain),
+			&RelationVec::new_bottom(domain)
 		),
 		RelationVec::new_id(domain)
 	);
 
-	/*
 	assert_eq!(
 		RelationVec::<char,char>::union(
-			RelationVec::<char,char>::complement(RelationVec::new_top(domain)),
-			RelationVec::new_id(domain)
+			&RelationVec::<char,char>::complement(&RelationVec::new_top(domain)),
+			&RelationVec::new_id(domain)
 		),
 		RelationVec::new_bottom(domain)
 	);
 	assert_eq!(
 		RelationVec::<char,char>::union(
-			RelationVec::<char,char>::complement(RelationVec::new_bottom(domain)),
-			RelationVec::new_id(domain)
+			&RelationVec::<char,char>::complement(&RelationVec::new_bottom(domain)),
+			&RelationVec::new_id(domain)
 		),
 		RelationVec::new_top(domain)
 	);
 	
 	assert_eq!(
-		RelationVec::<char,char>::converse(RelationVec::new_top(domain)),
+		RelationVec::<char,char>::converse(&RelationVec::new_top(domain)),
 		RelationVec::new_bottom(domain)
 	);
 	assert_eq!(
-		RelationVec::<char,char>::converse(RelationVec::new_bottom(domain)),
+		RelationVec::<char,char>::converse(&RelationVec::new_bottom(domain)),
 		RelationVec::new_top(domain)
 	);
-	*/
 }
 
 #[test]
@@ -252,11 +250,15 @@ fn foobar() {
 	let n32: Vec<u32> = (1..=32).collect::<Vec<_>>();
 	let top = RelationVec::new_top(&n32);
 	let bot = RelationVec::new_bottom(&n32);
-	let u = RelationVec::<u32,u32>::union(top, bot);
+	let u = RelationVec::<u32,u32>::union(&top, &bot);
 	assert_eq!(u, RelationVec::new_full(&n32));
 	
-	let div = RelationVec::from_predicate(&n32, |(&x, &y)| y % x == 0);
-	let _c = RelationVec::<u32,u32>::complement(div);
+	let c = RelationVec::<u32,u32>::complement(&top);
+	assert_eq!(c, &RelationVec::<u32,u32>::union(&RelationVec::new_bottom(&n32), &RelationVec::new_id(&n32)));
 	
-	let _le = RelationVec::from_predicate(&n32, |(&x, &y)| x <= y);
+	let empty = RelationVec::new_empty(&n32);
+	let full = RelationVec::new_full(&n32);
+	let div = RelationVec::from_predicate(&n32, |(&x, &y)| y % x == 0);
+	let le = RelationVec::from_predicate(&n32, |(&x, &y)| x <= y);
+	relax::relation_tabular::tests::union(&empty, &full, &div, &le, &top);
 }

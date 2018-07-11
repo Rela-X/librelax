@@ -3,35 +3,29 @@ use Relation;
 use relation_tabular::RelationTabular;
 
 #[derive(Debug,PartialEq,Eq)]
-pub struct RelationVec<'a, P: 'a, Q: 'a> {
+pub struct RelationVec<'a, P, Q>
+where P: 'a + PartialEq<Q> + Eq + std::fmt::Debug,
+      Q: 'a + PartialEq<P> + Eq + std::fmt::Debug,
+{
 	pub domain: (&'a[P], &'a[Q]),
 	pub table: Vec<bool>,
 }
 
-macro_rules! cross {
-	($p:expr, $q:expr) => ($p.flat_map(|e| std::iter::repeat(e).zip($q.clone())))
-}
-/*
-macro_rules! cross_uniq {
-	($p:expr, $q:expr) => ($p.enumerate().flat_map(|(i, e)| std::iter::repeat(e).zip($q.skip(i+1).clone())))
-}
-*/
-
 /* Endorelation */
 impl<'a, T> RelationVec<'a, T, T>
-where T: Eq
+where T: Eq + std::fmt::Debug,
 {
 	pub fn new_empty(set: &'a[T]) -> Self {
-		return RelationVec {
+		RelationVec {
 			domain: (set, set),
 			table: vec![false; set.len().pow(2)],
-		};
+		}
 	}
 	pub fn new_full(set: &'a[T]) -> Self {
-		return RelationVec {
+		RelationVec {
 			domain: (set, set),
 			table: vec![true; set.len().pow(2)],
-		};
+		}
 	}
 	pub fn new_id(set: &'a[T]) -> Self {
 		let mut r = Self::new_empty(set);
@@ -66,67 +60,22 @@ where T: Eq
 
 	pub fn from_predicate<P>(set: &'a[T], predicate: P) -> Self
 	where P: FnMut((&T, &T)) -> bool {
-		return RelationVec {
+		RelationVec {
 			domain: (set, set),
 			table: (0..set.len().pow(2))
 				.map(|i| (i / set.len(), i % set.len())) // ? cross!()
 				.map(|(ix, iy)| (&set[ix], &set[iy]))
 				.map(predicate)
-				.collect::<Vec<_>>(),
-		};
+				.collect(),
+		}
 	}
 
-	pub fn new_union(p: Self, q: Self) -> Self {
-		// TODO if p.domain != q.domain { error }
-		return RelationVec {
-			domain: p.domain,
-			table: p.table.iter().zip(q.table.iter()).map(|(&bq, &bp)| bq || bp).collect::<Vec<_>>(),
-		};
-	}
-	pub fn new_intersection(p: Self, q: Self) -> Self {
-		// TODO if p.domain != q.domain { error }
-		return RelationVec {
-			domain: p.domain,
-			table: p.table.iter().zip(q.table.iter()).map(|(&bq, &bp)| bq && bp).collect::<Vec<_>>(),
-		};
-	}
-	pub fn new_complement(r: Self) -> Self {
-		return RelationVec {
-			domain: r.domain,
-			table: r.table.iter().map(|&b| !b).collect::<Vec<_>>(),
-		};
-	}
-	pub fn new_converse(r: Self) -> Self {
-		// TODO if !r.is_homogeneous { error }
-		let mut new = Self::new_empty(r.domain.0);
-		// transpose r.table
-		for (ix, iy) in cross!(0..r.domain.0.len(), 0..r.domain.1.len()) {
-			new.table[r.get_table_index(ix, iy)] = r.eval_at(iy, ix);
-		}
-		return new;
-
-	}
-	// TODO ? "composition"
-	pub fn new_concatenation(p: Self, q: Self) -> Self {
-		// TODO if p.domain != q.domain { error }
-		let mut r = Self::new_empty(p.domain.0);
-		// FIXME validate this!
-		for (ix, iy) in cross!(0..p.domain.0.len(), 0..p.domain.1.len()) {
-			if !p.eval_at(ix, iy) { continue; }
-			for iz in 0..q.domain.1.len() {
-				if !q.eval_at(iy, iz) { continue; }
-				let idx = r.get_table_index(ix, iz);
-				r.table[idx] = true;
-			}
-		}
-		return r;
-	}
 //	fn new_subsetleq(rf_Set *domain) -> RelationVec<'a, P, Q> {}
 }
 
 impl<'a, P, Q> RelationVec<'a, P, Q>
-where P: Eq + PartialEq<Q>,
-      Q: Eq + PartialEq<P>,
+where P: Eq + PartialEq<Q> + std::fmt::Debug,
+      Q: Eq + PartialEq<P> + std::fmt::Debug,
 {
 	fn get_table_index(&self, ix: usize, iy: usize) -> usize {
 		ix * self.domain.0.len() + iy
@@ -134,14 +83,12 @@ where P: Eq + PartialEq<Q>,
 }
 
 impl<'a, P, Q> RelationTabular for RelationVec<'a, P, Q>
-where P: Eq + PartialEq<Q>,
-      Q: Eq + PartialEq<P>,
+where P: Eq + PartialEq<Q> + std::fmt::Debug,
+      Q: Eq + PartialEq<P> + std::fmt::Debug,
 {
 	type X = P;
 	type Y = Q;
-
 	fn get_domain(&self) -> (&[P], &[Q]) { self.domain }
-
 	fn eval_at(&self, ix: usize, iy: usize) -> bool {
 		let i = self.get_table_index(ix, iy);
 		return self.table[i];

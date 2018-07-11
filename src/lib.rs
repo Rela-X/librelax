@@ -37,22 +37,28 @@ pub trait Relation {
 	fn is_bijective(&self) -> bool { self.is_injective() && self.is_surjective() }
 	fn is_function(&self) -> bool { self.is_functional() && self.is_lefttotal() }
 
-	fn union<P, Q, X, Y>(p: P, q: Q) -> Union<P, Q, X, Y>
-	where P: Relation<X=X,Y=Y>,
-	      Q: Relation<X=X,Y=Y>,
+	fn union<'a, P, Q, XX, YY>(p: &'a P, q: &'a Q) -> Union<'a, P, Q, XX, YY>
+	where P: Relation<X=XX, Y=YY>,
+	      Q: Relation<X=XX, Y=YY>,
 	{
 		Union { p: p, q: q }
 	}
-	fn intersection<R: Relation>(p: R, q: R) -> Intersection<R> {
+	fn intersection<'a, P, Q, XX, YY>(p: &'a P, q: &'a Q) -> Intersection<'a, P, Q, XX, YY>
+	where P: Relation<X=XX, Y=YY>,
+	      Q: Relation<X=XX, Y=YY>,
+	{
 		Intersection { p: p, q: q }
 	}
-	fn complement<R: Relation>(r: R) -> Complement<R> {
+	fn complement<R: Relation>(r: &R) -> Complement<R> {
 		Complement { r: r }
 	}
-	fn converse<R: Relation>(r: R) -> Converse<R> {
+	fn converse<R: Relation>(r: &R) -> Converse<R> {
 		Converse { r: r }
 	}
-	fn concatenation<R: Relation>(p: R, q: R) -> Concatenation<R> {
+	fn concatenation<'a, P, Q, XX, YY, ZZ>(p: &'a P, q: &'a Q) -> Concatenation<'a, P, Q, XX, YY, ZZ>
+	where P: 'a + Relation<X=XX, Y=YY>,
+	      Q: 'a + Relation<X=YY, Y=ZZ>,
+	{
 		Concatenation { p: p, q: q }
 	}
 }
@@ -61,37 +67,59 @@ pub trait Relation {
  * No implementations, because performance would be (even more) terrible
  */
 #[derive(Debug)]
-pub struct Union<P, Q, X, Y>
-where P: Relation<X=X,Y=Y>,
-      Q: Relation<X=X,Y=Y>,
+pub struct Union<'a, P, Q, XX, YY>
+where P: 'a + Relation<X=XX, Y=YY>,
+      Q: 'a + Relation<X=XX, Y=YY>,
 {
-	p: P,
-	q: Q,
+	p: &'a P,
+	q: &'a Q,
 }
-//impl<T: Relation> Relation for Union<T> {}
+
+#[derive(Debug)]
+pub struct Intersection<'a, P, Q, XX, YY>
+where P: 'a + Relation<X=XX, Y=YY>,
+      Q: 'a + Relation<X=XX, Y=YY>,
+{
+	p: &'a P,
+	q: &'a Q,
+}
 
 #[derive(Debug,PartialEq,Eq)]
-pub struct Intersection<T: Relation> {
-	p: T,
-	q: T,
+pub struct Complement<'a, R: 'a + Relation> {
+	r: &'a R,
 }
-//impl<T: Relation> Relation for Intersection<T> {}
 
 #[derive(Debug,PartialEq,Eq)]
-pub struct Complement<T: Relation> {
-	r: T,
+pub struct Converse<'a, R: 'a + Relation> {
+	r: &'a R,
 }
-//impl<T: Relation> Relation for Complement<T> {}
 
-#[derive(Debug,PartialEq,Eq)]
-pub struct Converse<T: Relation> {
-	r: T,
+#[derive(Debug)]
+pub struct Concatenation<'a, P, Q, XX, YY, ZZ>
+where P: 'a + Relation<X=XX, Y=YY>,
+      Q: 'a + Relation<X=YY, Y=ZZ>,
+{
+	p: &'a P,
+	q: &'a Q,
 }
-//impl<T: Relation> Relation for Converse<T> {}
 
-#[derive(Debug,PartialEq,Eq)]
-pub struct Concatenation<T: Relation> {
-	p: T,
-	q: T,
+mod tests {
+	use super::*;
+
+	fn relation_property_test<R>(r: &R)
+	where R: Relation
+	{
+		assert_eq!(r.is_homogeneous(), !r.is_heterogeneous());
+		assert_eq!(r.is_reflexive() && r.is_irreflexive(), false);
+
+		assert_eq!(r.is_symmetric() && r.is_antisymmetric(), false);
+		assert_eq!(r.is_asymmetric(), r.is_irreflexive() && r.is_antisymmetric());
+
+		assert_eq!(r.is_preorder(), r.is_reflexive() && r.is_transitive());
+		assert_eq!(r.is_partial_order(), r.is_preorder() && r.is_antisymmetric());
+		assert_eq!(r.is_equivalent(), r.is_preorder() && r.is_symmetric());
+
+		assert_eq!(r.is_bijective(), r.is_injective() && r.is_surjective());
+		assert_eq!(r.is_function(), r.is_functional() && r.is_lefttotal());
+	}
 }
-//impl<T: Relation> Relation for Concatenation<T> {}

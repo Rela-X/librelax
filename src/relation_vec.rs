@@ -11,6 +11,29 @@ where P: 'a + PartialEq<Q> + Eq + std::fmt::Debug,
 	pub table: Vec<bool>,
 }
 
+impl<'a, P, Q> RelationVec<'a, P, Q>
+where P: Eq + PartialEq<Q> + std::fmt::Debug,
+      Q: Eq + PartialEq<P> + std::fmt::Debug,
+{
+	fn get_table_index(&self, ix: usize, iy: usize) -> usize {
+		ix * self.domain.0.len() + iy
+	}
+}
+
+impl<'a, P, Q> RelationTabular for RelationVec<'a, P, Q>
+where P: Eq + PartialEq<Q> + std::fmt::Debug,
+      Q: Eq + PartialEq<P> + std::fmt::Debug,
+{
+	type X = P;
+	type Y = Q;
+	fn get_domain(&self) -> (&[Self::X], &[Self::Y]) { self.domain }
+	fn eval_at(&self, ix: usize, iy: usize) -> bool {
+		let i = self.get_table_index(ix, iy);
+		return self.table[i];
+	}
+}
+
+
 /* Endorelation */
 impl<'a, T> RelationVec<'a, T, T>
 where T: Eq + std::fmt::Debug,
@@ -71,28 +94,6 @@ where T: Eq + std::fmt::Debug,
 	}
 
 //	fn new_subsetleq(rf_Set *domain) -> RelationVec<'a, P, Q> {}
-}
-
-impl<'a, P, Q> RelationVec<'a, P, Q>
-where P: Eq + PartialEq<Q> + std::fmt::Debug,
-      Q: Eq + PartialEq<P> + std::fmt::Debug,
-{
-	fn get_table_index(&self, ix: usize, iy: usize) -> usize {
-		ix * self.domain.0.len() + iy
-	}
-}
-
-impl<'a, P, Q> RelationTabular for RelationVec<'a, P, Q>
-where P: Eq + PartialEq<Q> + std::fmt::Debug,
-      Q: Eq + PartialEq<P> + std::fmt::Debug,
-{
-	type X = P;
-	type Y = Q;
-	fn get_domain(&self) -> (&[P], &[Q]) { self.domain }
-	fn eval_at(&self, ix: usize, iy: usize) -> bool {
-		let i = self.get_table_index(ix, iy);
-		return self.table[i];
-	}
 }
 
 /*

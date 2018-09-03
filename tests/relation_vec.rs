@@ -274,5 +274,5 @@ fn foobar() {
 	let le = RelationVec::from_predicate(&n32, |(&x, &y)| x <= y);
 	relax::relation::relation_tabular::tests::union(&empty, &full, &div, &le, &top);
 	relax::relation::relation_tabular::tests::intersection(&full, &empty, &div, &le, &top);
-	//relax::relation::relation_tabular::tests::distributivity_union_intersection(&div, &le, &top); // FAILS!
+	relax::relation::relation_tabular::tests::distributivity_union_intersection(&div, &le, &top);
 }

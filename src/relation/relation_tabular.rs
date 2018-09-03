@@ -253,7 +253,7 @@ pub mod tests {
 		// right distributivity (union, intersection)
 		assert_eq!(
 			R::intersection(&R::union(a, b), c),
-			R::union(&R::intersection(a, b), &R::intersection(a, c)),
+			R::union(&R::intersection(a, c), &R::intersection(b, c)),
 		);
 	}
 }

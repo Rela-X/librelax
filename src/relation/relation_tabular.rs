@@ -256,4 +256,17 @@ pub mod tests {
 			R::union(&R::intersection(a, c), &R::intersection(b, c)),
 		);
 	}
+
+	pub fn de_morgan<R>(a: &R, b: &R)
+	where R: RelationTabular + std::fmt::Debug
+	{
+		assert_eq!(
+			R::complement(&R::union(a, b)),
+			R::intersection(&R::complement(a), &R::complement(b)),
+		);
+		assert_eq!(
+			R::complement(&R::intersection(a, b)),
+			R::union(&R::complement(a), &R::complement(b)),
+		);
+	}
 }

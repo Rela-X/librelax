@@ -275,4 +275,5 @@ fn foobar() {
 	relax::relation::relation_tabular::tests::union(&empty, &full, &div, &le, &top);
 	relax::relation::relation_tabular::tests::intersection(&full, &empty, &div, &le, &top);
 	relax::relation::relation_tabular::tests::distributivity_union_intersection(&div, &le, &top);
+	relax::relation::relation_tabular::tests::de_morgan(&div, &le);
 }

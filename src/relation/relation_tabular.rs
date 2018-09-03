@@ -1,10 +1,5 @@
 use std;
-use Relation;
-use Union;
-use Intersection;
-use Complement;
-use Concatenation;
-use Converse;
+use relation::Relation;
 
 pub trait RelationTabular
 where Self::X: Eq + PartialEq<Self::Y> + std::fmt::Debug,
@@ -185,7 +180,7 @@ where T: RelationTabular<X=X, Y=Y>,
 //     where P: RelationTabular,
 //           Q: RelationTabular,
 // are not yet possible in rust (as of 1.28)
-fn eq<P, Q, XX, YY>(p: &P, q: &Q) -> bool
+pub fn eq<P, Q, XX, YY>(p: &P, q: &Q) -> bool
 where P: RelationTabular<X=XX, Y=YY>,
       Q: RelationTabular<X=XX, Y=YY>,
       XX: PartialEq<YY> + Eq + std::fmt::Debug,
@@ -195,100 +190,12 @@ where P: RelationTabular<X=XX, Y=YY>,
 		|(ix, iy)| p.eval_at(ix, iy) == q.eval_at(ix, iy)
 	)
 }
-fn neq<P, Q, XX, YY>(p: &P, q: &Q) -> bool
+pub fn neq<P, Q, XX, YY>(p: &P, q: &Q) -> bool
 where P: RelationTabular<X=XX, Y=YY>,
       Q: RelationTabular<X=XX, Y=YY>,
       XX: PartialEq<YY> + Eq + std::fmt::Debug,
       YY: PartialEq<XX> + Eq + std::fmt::Debug,
 { !eq(p, q) }
-
-
-impl<'a, P, Q, XX, YY> RelationTabular for Union<'a, P, Q, XX, YY>
-where P: RelationTabular<X=XX, Y=YY>,
-      Q: RelationTabular<X=XX, Y=YY>,
-      XX: PartialEq<YY> + Eq + std::fmt::Debug,
-      YY: PartialEq<XX> + Eq + std::fmt::Debug,
-{
-	type X = XX;
-	type Y = YY;
-	fn get_domain(&self) -> (&[Self::X], &[Self::Y]) { self.p.get_domain() }
-	fn eval_at(&self, ix: usize, iy: usize) -> bool { self.p.eval_at(ix, iy) || self.q.eval_at(ix, iy) }
-}
-impl<'a, R, P, Q, XX, YY> PartialEq<R> for Union<'a, P, Q, XX, YY>
-where R: RelationTabular<X=XX, Y=YY>,
-      P: RelationTabular<X=XX, Y=YY>,
-      Q: RelationTabular<X=XX, Y=YY>,
-      XX: PartialEq<YY> + Eq + std::fmt::Debug,
-      YY: PartialEq<XX> + Eq + std::fmt::Debug,
-{
-	fn eq(&self, other: &R) -> bool { eq(self, other) }
-}
-
-impl<'a, P, Q, XX, YY> RelationTabular for Intersection<'a, P, Q, XX, YY>
-where P: RelationTabular<X=XX, Y=YY>,
-      Q: RelationTabular<X=XX, Y=YY>,
-      XX: PartialEq<YY> + Eq + std::fmt::Debug,
-      YY: PartialEq<XX> + Eq + std::fmt::Debug,
-{
-	type X = XX;
-	type Y = YY;
-	fn get_domain(&self) -> (&[Self::X], &[Self::Y]) { self.p.get_domain() }
-	fn eval_at(&self, ix: usize, iy: usize) -> bool { self.p.eval_at(ix, iy) && self.q.eval_at(ix, iy) }
-}
-impl<'a, R, P, Q, XX, YY> PartialEq<R> for Intersection<'a, P, Q, XX, YY>
-where R: RelationTabular<X=XX, Y=YY>,
-      P: RelationTabular<X=XX, Y=YY>,
-      Q: RelationTabular<X=XX, Y=YY>,
-      XX: PartialEq<YY> + Eq + std::fmt::Debug,
-      YY: PartialEq<XX> + Eq + std::fmt::Debug,
-{
-	fn eq(&self, other: &R) -> bool { eq(self, other) }
-}
-
-impl<'a, R: 'a + RelationTabular> RelationTabular for Complement<'a, R> {
-	type X = R::X;
-	type Y = R::Y;
-	fn get_domain(&self) -> (&[Self::X], &[Self::Y]) { self.r.get_domain() }
-	fn eval_at(&self, ix: usize, iy: usize) -> bool { !self.r.eval_at(ix, iy) }
-}
-impl<'a, R: 'a + RelationTabular> PartialEq<R> for Complement<'a, R> {
-	fn eq(&self, other: &R) -> bool { eq(self, other) }
-}
-
-impl<'a, R: 'a + RelationTabular> RelationTabular for Converse<'a, R> {
-	type X = R::X;
-	type Y = R::Y;
-	fn get_domain(&self) -> (&[Self::X], &[Self::Y]) { self.r.get_domain() }
-	fn eval_at(&self, ix: usize, iy: usize) -> bool { self.r.eval_at(iy, ix) }
-}
-impl<'a, R: 'a + RelationTabular> PartialEq<R> for Converse<'a, R> {
-	fn eq(&self, other: &R) -> bool { eq(self, other) }
-}
-
-impl<'a, P, Q, XX, YY, ZZ> RelationTabular for Concatenation<'a, P, Q, XX, YY, ZZ>
-where P: RelationTabular<X=XX, Y=YY>,
-      Q: RelationTabular<X=YY, Y=ZZ>,
-      XX: PartialEq<YY> + PartialEq<ZZ> + Eq + std::fmt::Debug,
-      YY: PartialEq<XX> + PartialEq<ZZ> + Eq + std::fmt::Debug,
-      ZZ: PartialEq<XX> + PartialEq<YY> + Eq + std::fmt::Debug,
-{
-	type X = XX;
-	type Y = ZZ;
-	fn get_domain(&self) -> (&[Self::X], &[Self::Y]) { (self.p.get_domain().0, self.q.get_domain().1) }
-	fn eval_at(&self, ix: usize, iy: usize) -> bool {
-		self.p.eval_at(ix, iy) && (0..self.q.get_domain().1.len()).any(|iz| self.q.eval_at(iy, iz))
-	}
-}
-impl<'a, R, P, Q, XX, YY, ZZ> PartialEq<R> for Concatenation<'a, P, Q, XX, YY, ZZ>
-where R: RelationTabular<X=XX, Y=ZZ>,
-      P: RelationTabular<X=XX, Y=YY>,
-      Q: RelationTabular<X=YY, Y=ZZ>,
-      XX: PartialEq<YY> + PartialEq<ZZ> + Eq + std::fmt::Debug,
-      YY: PartialEq<XX> + PartialEq<ZZ> + Eq + std::fmt::Debug,
-      ZZ: PartialEq<XX> + PartialEq<YY> + Eq + std::fmt::Debug,
-{
-	fn eq(&self, other: &R) -> bool { eq(self, other) }
-}
 
 pub mod tests {
 	use super::*;
@@ -314,7 +221,7 @@ pub mod tests {
 		assert_eq!(R::union(a, b), R::union(b, a));
 	}
 
-	fn intersection<R>(neutral: &R, absorbing: &R, a: &R, b: &R, c: &R)
+	pub fn intersection<R>(neutral: &R, absorbing: &R, a: &R, b: &R, c: &R)
 	where R: RelationTabular + std::fmt::Debug
 	{
 		let r = a;
@@ -335,7 +242,7 @@ pub mod tests {
 		assert_eq!(R::intersection(a, b), R::intersection(b, a));
 	}
 
-	fn distributivity_union_intersection<R>(a: &R, b: &R, c: &R)
+	pub fn distributivity_union_intersection<R>(a: &R, b: &R, c: &R)
 	where R: RelationTabular + std::fmt::Debug
 	{
 		// left distributivity (union, intersection)

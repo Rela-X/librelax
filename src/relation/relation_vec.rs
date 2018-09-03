@@ -1,6 +1,6 @@
 use std;
-use Relation;
-use relation_tabular::RelationTabular;
+use relation::Relation;
+use relation::relation_tabular::RelationTabular;
 
 #[derive(Debug,PartialEq,Eq)]
 pub struct RelationVec<'a, P, Q>

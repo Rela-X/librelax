@@ -1,7 +1,7 @@
 extern crate relax;
 
-use relax::Relation;
-use relax::relation_vec::RelationVec;
+use relax::relation::Relation;
+use relax::relation::relation_vec::RelationVec;
 
 const ALPHABET: [char; 26] = [
 	'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
@@ -247,18 +247,32 @@ fn new_endorelation() {
 
 #[test]
 fn foobar() {
-	let n32: Vec<u32> = (1..=32).collect::<Vec<_>>();
+	let n32: Vec<u32> = (1..=8).collect::<Vec<_>>();
 	let top = RelationVec::new_top(&n32);
 	let bot = RelationVec::new_bottom(&n32);
 	let u = RelationVec::<u32,u32>::union(&top, &bot);
 	assert_eq!(u, RelationVec::new_full(&n32));
 	
-	let c = RelationVec::<u32,u32>::complement(&top);
-	assert_eq!(c, &RelationVec::<u32,u32>::union(&RelationVec::new_bottom(&n32), &RelationVec::new_id(&n32)));
+	/*
+	assert_eq!(
+		RelationVec::<u32,u32>::complement(&top),
+		RelationVec::<u32,u32>::converse(&top),
+	);
+	assert_eq!(
+		RelationVec::<u32,u32>::complement(&top),
+		RelationVec::<u32,u32>::union(&RelationVec::new_bottom(&n32), &RelationVec::new_id(&n32))
+	);
+	*/
+	assert_eq!(
+		RelationVec::<u32,u32>::intersection(&RelationVec::new_id(&n32), &RelationVec::new_full(&n32)),
+		RelationVec::<u32,u32>::union(&RelationVec::new_id(&n32), &RelationVec::new_empty(&n32))
+	);
 	
 	let empty = RelationVec::new_empty(&n32);
 	let full = RelationVec::new_full(&n32);
 	let div = RelationVec::from_predicate(&n32, |(&x, &y)| y % x == 0);
 	let le = RelationVec::from_predicate(&n32, |(&x, &y)| x <= y);
-	relax::relation_tabular::tests::union(&empty, &full, &div, &le, &top);
+	relax::relation::relation_tabular::tests::union(&empty, &full, &div, &le, &top);
+	relax::relation::relation_tabular::tests::intersection(&full, &empty, &div, &le, &top);
+	//relax::relation::relation_tabular::tests::distributivity_union_intersection(&div, &le, &top); // FAILS!
 }

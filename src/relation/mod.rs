@@ -59,10 +59,14 @@ pub trait Relation {
 	{
 		Intersection::new(p, q)
 	}
-	fn complement<R: Relation>(r: &R) -> Complement<R> {
+	fn complement<R>(r: &R) -> Complement<R>
+	where R: Relation,
+	{
 		Complement::new(r)
 	}
-	fn converse<R: Relation>(r: &R) -> Converse<R> {
+	fn converse<R>(r: &R) -> Converse<R>
+	where R: Relation,
+	{
 		Converse::new(r)
 	}
 	fn concatenation<'a, P, Q, XX, YY, ZZ>(p: &'a P, q: &'a Q) -> Concatenation<'a, P, Q, XX, YY, ZZ>

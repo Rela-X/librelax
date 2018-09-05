@@ -140,7 +140,7 @@ where T: RelationTabular<X=X, Y=Y>,
 			|ix| (0..self.get_domain().1.len())
 				.filter(|iy| self.eval_at(ix, iy))
 				.take(2)
-				.len() == 1
+				.len() <= 1
 		)
 		*/
 		for i0 in 0..self.get_domain().0.len() {

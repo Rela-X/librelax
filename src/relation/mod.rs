@@ -75,6 +75,12 @@ pub trait Relation {
 	{
 		Concatenation::new(p, q)
 	}
+
+	// all closures: Endorelation
+	//fn closure_reflexive(r: &Relation) -> Relation { R::union(r, &R::id) }
+	//fn closure_symmetric<R: Relation>(r: &R) -> R { R::union(r, &R::converse(r)) }
+	//fn closure_difunctional<R: Relation>(r: &R) -> R {}
+	//fn closure_biorder<R: Relation>(r: &R) -> R {}
 }
 
 mod tests {

@@ -18,13 +18,13 @@ macro_rules! cross_uniq {
 	($p:expr, $q:expr) => ($p.enumerate().flat_map(|(i, e)| std::iter::repeat(e).zip($q.skip(i+1).clone())))
 }
 
-impl<T, X, Y> Relation for T
-where T: RelationTabular<X=X, Y=Y>,
-      X: PartialEq<Y> + Eq + std::fmt::Debug,
-      Y: PartialEq<X> + Eq + std::fmt::Debug,
+impl<R, XX, YY> Relation for R
+where R: RelationTabular<X=XX, Y=YY>,
+      XX: PartialEq<YY> + Eq + std::fmt::Debug,
+      YY: PartialEq<XX> + Eq + std::fmt::Debug,
 {
-	type X = X;
-	type Y = Y;
+	type X = XX;
+	type Y = YY;
 
 	fn eval(&self, x: &Self::X, y: &Self::Y) -> bool {
 		let ix = self.get_domain().0.iter().position(|e| e == x).unwrap();

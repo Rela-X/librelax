@@ -252,22 +252,7 @@ fn foobar() {
 	let bot = RelationVec::new_bottom(&n32);
 	let u = RelationVec::<u32,u32>::union(&top, &bot);
 	assert_eq!(u, RelationVec::new_full(&n32));
-	
-	/*
-	assert_eq!(
-		RelationVec::<u32,u32>::complement(&top),
-		RelationVec::<u32,u32>::converse(&top),
-	);
-	assert_eq!(
-		RelationVec::<u32,u32>::complement(&top),
-		RelationVec::<u32,u32>::union(&RelationVec::new_bottom(&n32), &RelationVec::new_id(&n32))
-	);
-	*/
-	assert_eq!(
-		RelationVec::<u32,u32>::intersection(&RelationVec::new_id(&n32), &RelationVec::new_full(&n32)),
-		RelationVec::<u32,u32>::union(&RelationVec::new_id(&n32), &RelationVec::new_empty(&n32))
-	);
-	
+
 	let empty = RelationVec::new_empty(&n32);
 	let full = RelationVec::new_full(&n32);
 	let div = RelationVec::from_predicate(&n32, |(&x, &y)| y % x == 0);
@@ -276,4 +261,14 @@ fn foobar() {
 	relax::relation::relation_tabular::tests::intersection(&full, &empty, &div, &le, &top);
 	relax::relation::relation_tabular::tests::distributivity_union_intersection(&div, &le, &top);
 	relax::relation::relation_tabular::tests::de_morgan(&div, &le);
+
+	let lt = RelationVec::from_predicate(&n32, |(&x, &y)| x < y);
+	assert_eq!(
+		RelationVec::<u32,u32>::complement(&bot),
+		lt
+	);
+	assert_eq!(
+		RelationVec::<u32,u32>::intersection(&RelationVec::new_id(&n32), &RelationVec::new_full(&n32)),
+		RelationVec::<u32,u32>::union(&RelationVec::new_id(&n32), &RelationVec::new_empty(&n32))
+	);
 }

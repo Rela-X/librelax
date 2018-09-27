@@ -15,6 +15,12 @@ impl<'a, P, Q> RelationVec<'a, P, Q>
 where P: Eq + PartialEq<Q> + std::fmt::Debug,
       Q: Eq + PartialEq<P> + std::fmt::Debug,
 {
+	pub fn new<T: Into<Vec<bool>>>(p: &'a[P], q: &'a [Q], table: T) -> Self {
+		RelationVec {
+			domain: (p, q),
+			table: table.into(),
+		}
+	}
 	fn get_table_index(&self, ix: usize, iy: usize) -> usize {
 		ix * self.domain.0.len() + iy
 	}

@@ -23,6 +23,7 @@ pub trait Relation {
 	fn is_homogeneous(&self) -> bool;
 	fn is_heterogeneous(&self) -> bool { !self.is_homogeneous() }
 
+	// Endorelation
 	fn is_reflexive(&self) -> bool; /* xRx */
 	fn is_irreflexive(&self) -> bool; /* aka strict */
 	fn is_antisymmetric(&self) -> bool;
@@ -40,6 +41,7 @@ pub trait Relation {
 //	fn is_lattice(&self) -> bool; // TODO Result
 //	fn is_sublattice(&self, other: &Relation) -> bool; // TODO Result
 
+	// Relation
 	fn is_injective(&self) -> bool; /* aka left-unique */
 	fn is_functional(&self) -> bool; /* aka univalent, right-unique, right-definite */
 	fn is_surjective(&self) -> bool; /* aka right-total, onto */

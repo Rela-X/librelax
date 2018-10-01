@@ -1,4 +1,4 @@
-use std;
+use set;
 use relation::Relation;
 use relation::relation_tabular::RelationTabular;
 
@@ -20,19 +20,19 @@ where R: 'a + Relation,
 impl<'a, R> RelationTabular for Converse<'a, R>
 where R: 'a + RelationTabular,
 {
-	type X = R::X;
-	type Y = R::Y;
-	fn get_domain(&self) -> (&[Self::X], &[Self::Y]) { self.r.get_domain() }
-	fn eval_at(&self, ix: usize, iy: usize) -> bool { self.r.eval_at(iy, ix) }
+	fn get_domain(&self) -> (&[set::SetElement], &[set::SetElement]) {
+		self.r.get_domain()
+	}
+	fn eval_at(&self, ix: usize, iy: usize) -> bool {
+		self.r.eval_at(iy, ix)
+	}
 }
 
-impl<'a, R, RR, XX, YY> PartialEq<R> for Converse<'a, RR>
-where R: 'a + RelationTabular<X=XX, Y=YY>,
-      RR: 'a + RelationTabular<X=XX, Y=YY>,
-      XX: PartialEq<YY> + Eq + std::fmt::Debug,
-      YY: PartialEq<XX> + Eq + std::fmt::Debug,
+impl<'a, P, Q> PartialEq<Q> for Converse<'a, P>
+where P: 'a + RelationTabular,
+      Q: 'a + RelationTabular,
 {
-	fn eq(&self, other: &R) -> bool {
+	fn eq(&self, other: &Q) -> bool {
 		::relation::relation_tabular::eq(self, other)
 	}
 }

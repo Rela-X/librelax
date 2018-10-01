@@ -1,4 +1,4 @@
-use std;
+use SetElement;
 use relation::Relation;
 use relation::relation_tabular::RelationTabular;
 
@@ -18,21 +18,21 @@ where R: 'a + Relation,
 }
 
 impl<'a, R> RelationTabular for Complement<'a, R>
-where R: 'a + RelationTabular,
+where R: RelationTabular,
 {
-	type X = R::X;
-	type Y = R::Y;
-	fn get_domain(&self) -> (&[Self::X], &[Self::Y]) { self.r.get_domain() }
-	fn eval_at(&self, ix: usize, iy: usize) -> bool { !self.r.eval_at(ix, iy) }
+	fn get_domain(&self) -> (&[SetElement], &[SetElement]) {
+		self.r.get_domain()
+	}
+	fn eval_at(&self, ix: usize, iy: usize) -> bool {
+		!self.r.eval_at(ix, iy)
+	}
 }
 
-impl<'a, R, RR, XX, YY> PartialEq<R> for Complement<'a, RR>
-where R: 'a + RelationTabular<X=XX, Y=YY>,
-      RR: 'a + RelationTabular<X=XX, Y=YY>,
-      XX: PartialEq<YY> + Eq + std::fmt::Debug,
-      YY: PartialEq<XX> + Eq + std::fmt::Debug,
+impl<'a, P, Q> PartialEq<Q> for Complement<'a, P>
+where P: 'a + RelationTabular,
+      Q: 'a + RelationTabular,
 {
-	fn eq(&self, other: &R) -> bool {
+	fn eq(&self, other: &Q) -> bool {
 		::relation::relation_tabular::eq(self, other)
 	}
 }

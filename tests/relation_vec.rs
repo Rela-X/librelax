@@ -10,105 +10,90 @@ const ALPHABET: [char; 26] = [
 	'y', 'z',
 ];
 
-/*
 #[test]
 fn is_reflexive() {
-	let domain = &ALPHABET[0..3];
-	let r1 = RelationVec {
-		domain: (domain, domain),
-		table: vec![
-			true,  false, false,
-			true,  true,  false,
-			false, false, true,
-		],
-	};
+	let set: Set = ALPHABET[0..3].iter().collect();
+	let table = vec![
+		true,  false, false,
+		true,  true,  false,
+		false, false, true,
+	];
+	let r1 = RelationVec::new(set.clone(), set.clone(), table);
 	assert!(r1.is_reflexive());
 }
 #[test]
 fn is_irreflexive() {
-	let domain = &ALPHABET[0..4];
-	let r1 = RelationVec {
-		domain: (domain, domain),
-		table: vec![
-			false, true,  true,  true,
-			false, false, true,  true,
-			true,  true,  false, true,
-			false, true,  false, false,
-		],
-	};
+	let set: Set = ALPHABET[0..4].iter().collect();
+	let table = vec![
+		false, true,  true,  true,
+		false, false, true,  true,
+		true,  true,  false, true,
+		false, true,  false, false,
+	];
+	let r1 = RelationVec::new(set.clone(), set.clone(), table);
 	assert!(r1.is_irreflexive());
 }
 #[test]
 fn is_antisymmetric() {
-	let domain = &ALPHABET[0..4];
-	let r1 = RelationVec {
-		domain: (domain, domain),
-		table: vec![
-			true,  false, false, false,
-			false, true,  true,  false,
-			true,  false, false, false,
-			false, true,  false, true,
-		],
-	};
+	let set: Set = ALPHABET[0..4].iter().collect();
+	let table = vec![
+		true,  false, false, false,
+		false, true,  true,  false,
+		true,  false, false, false,
+		false, true,  false, true,
+	];
+	let r1 = RelationVec::new(set.clone(), set.clone(), table);
 	assert!(r1.is_antisymmetric());
 }
 #[test]
 fn is_transitive() {
-	let domain = &ALPHABET[0..4];
-	let r1 = RelationVec {
-		domain: (domain, domain),
-		table: vec![
-			false, false, false, false,
-			true,  false, true,  false,
-			true,  false, false, false,
-			true,  true,  true,  false,
-		]
-	};
+	let set: Set = ALPHABET[0..4].iter().collect();
+	let table = vec![
+		false, false, false, false,
+		true,  false, true,  false,
+		true,  false, false, false,
+		true,  true,  true,  false,
+	];
+	let r1 = RelationVec::new(set.clone(), set.clone(), table);
 	assert!(r1.is_transitive());
 }
 
 #[test]
 fn is_symmetric() {
-	let domain = &ALPHABET[0..4];
-	let r1 = RelationVec {
-		domain: (domain, domain),
-		table: vec![
-			true,  false, true,  false,
-			false, true,  true,  true,
-			true,  true,  false, false,
-			false, true,  false, true,
-		],
-	};
+	let set: Set = ALPHABET[0..4].iter().collect();
+	let table = vec![
+		true,  false, true,  false,
+		false, true,  true,  true,
+		true,  true,  false, false,
+		false, true,  false, true,
+	];
+	let r1 = RelationVec::new(set.clone(), set.clone(), table);
 	assert!(r1.is_symmetric());
 }
 #[test]
 fn is_asymmetric() {
-	let domain = &ALPHABET[0..4];
-	let r1 = RelationVec {
-		domain: (domain, domain),
-		table: vec![
-			false, false, false, false,
-			false, false, true,  false,
-			true,  false, false, false,
-			false, true,  false, false,
-		]
-	};
+	let set: Set = ALPHABET[0..4].iter().collect();
+	let table = vec![
+		false, false, false, false,
+		false, false, true,  false,
+		true,  false, false, false,
+		false, true,  false, false,
+	];
+	let r1 = RelationVec::new(set.clone(), set.clone(), table);
 	assert!(r1.is_asymmetric());
 }
 
 #[test]
 fn is_preorder() {
-	let domain = &ALPHABET[0..5];
-	let r1 = RelationVec {
-		domain: (domain, domain),
-		table: vec![
-			true,  false, true,  true,  false,
-			false, true,  false, false, false,
-			false, false, true,  true,  false,
-			false, false, true,  true,  false,
-			false, false, false, false, true,  
-		],
-	};
+	let set: Set = ALPHABET[0..5].iter().collect();
+	let table = vec![
+		true,  false, true,  true,  false,
+		false, true,  false, false, false,
+		false, false, true,  true,  false,
+		false, false, true,  true,  false,
+		false, false, false, false, true,
+	];
+	let r1 = RelationVec::new(set.clone(), set.clone(), table);
 	assert!(r1.is_reflexive());
 	assert!(r1.is_transitive());
 	assert!(!r1.is_symmetric());
@@ -120,17 +105,15 @@ fn is_partial_order() {}
 */
 #[test]
 fn is_equivalent() {
-	let domain = &ALPHABET[0..5];
-	let r1 = RelationVec {
-		domain: (domain, domain),
-		table: vec![
-			true,  false, true,  true,  false,
-			false, true,  false, false, false,
-			true,  false, true,  true,  false, 
-			true,  false, true,  true,  false, 
-			false, false, false, false, true,  
-		],
-	};
+	let set: Set = ALPHABET[0..5].iter().collect();
+	let table = vec![
+		true,  false, true,  true,  false,
+		false, true,  false, false, false,
+		true,  false, true,  true,  false,
+		true,  false, true,  true,  false,
+		false, false, false, false, true,
+	];
+	let r1 = RelationVec::new(set.clone(), set.clone(), table);
 	assert!(r1.is_reflexive());
 	assert!(r1.is_transitive());
 	assert!(r1.is_symmetric());
@@ -140,25 +123,22 @@ fn is_equivalent() {
 
 #[test]
 fn is_difunctional() {
-	let domain = &ALPHABET[0..10];
-	let r1 = RelationVec {
-		domain: (domain, domain),
-		table: vec![
-			false, false, true,  false, false, true,  false, true,  true,  true,
-			false, false, false, true,  true,  false, false, false, false, false,
-			false, false, false, true,  true,  false, false, false, false, false,
-			false, false, true,  false, false, true,  false, true,  true,  true,
-			false, false, false, false, false, false, false, false, false, false,
-			true,  false, false, false, false, false, false, false, false, false,
-			true,  false, false, false, false, false, false, false, false, false,
-			false, true,  false, false, false, false, false, false, false, false,
-			false, false, false, true,  true,  false, false, false, false, false,
-			false, false, false, false, false, false, false, false, false, false,
-		],
-	};
+	let set: Set = ALPHABET[0..10].iter().collect();
+	let table = vec![
+		false, false, true,  false, false, true,  false, true,  true,  true,
+		false, false, false, true,  true,  false, false, false, false, false,
+		false, false, false, true,  true,  false, false, false, false, false,
+		false, false, true,  false, false, true,  false, true,  true,  true,
+		false, false, false, false, false, false, false, false, false, false,
+		true,  false, false, false, false, false, false, false, false, false,
+		true,  false, false, false, false, false, false, false, false, false,
+		false, true,  false, false, false, false, false, false, false, false,
+		false, false, false, true,  true,  false, false, false, false, false,
+		false, false, false, false, false, false, false, false, false, false,
+	];
+	let r1 = RelationVec::new(set.clone(), set.clone(), table);
 	assert!(r1.is_difunctional());
 }
-*/
 
 /*
 fn is_lattice() {}
@@ -174,7 +154,7 @@ fn is_function() {}
 
 #[test]
 fn relation_mod8_equal() {
-	let n32: Vec<u8> = (1..=32).collect::<Vec<_>>();
+	let n32: Vec<u8> = (1..=32).collect();
 	let r = RelationVec::from_predicate(&n32, |(&x, &y)| x % 8 == y % 8);
 	// TODO verify
 	assert!(r.is_reflexive());
@@ -189,7 +169,7 @@ fn relation_mod8_equal() {
 }
 #[test]
 fn relation_divisible() {
-	let n32: Vec<u8> = (1..=32).collect::<Vec<_>>();
+	let n32: Vec<u8> = (1..=32).collect();
 	let r = RelationVec::from_predicate(&n32, |(&x, &y)| y % x == 0);
 	assert!(r.is_reflexive());
 	assert!(!r.is_irreflexive());

@@ -3,8 +3,7 @@ use std::fmt;
 use std::string::ToString;
 
 use set::{Set, SetElement};
-use relation::Relation;
-use relation::RelationTabular;
+use relation::{Relation, Endorelation};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct RelationVec {
@@ -39,7 +38,7 @@ impl RelationVec {
 
 }
 
-impl RelationTabular for RelationVec {
+impl Relation for RelationVec {
 	fn get_domain(&self) -> (&Set, &Set) {
 		(&self.domain.0, &self.domain.1)
 	}
@@ -48,6 +47,8 @@ impl RelationTabular for RelationVec {
 		return self.table[i];
 	}
 }
+
+impl Endorelation for RelationVec {}
 
 impl fmt::Display for RelationVec {
 	fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {

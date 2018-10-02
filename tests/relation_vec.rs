@@ -230,8 +230,88 @@ fn new_endorelation() {
 	);
 }
 
+pub fn union<P, Q, R, S, T>(neutral: &P, absorbing: &Q, a: &R, b: &S, c: &T)
+where P: Endorelation + std::fmt::Debug,
+      Q: Endorelation + std::fmt::Debug,
+      R: Endorelation + std::fmt::Debug,
+      S: Endorelation + std::fmt::Debug,
+      T: Endorelation + std::fmt::Debug,
+{
+	let r = a;
+	assert!(r.is_homogeneous());
+
+	// union: neutral element
+	assert_eq!(R::union(r, neutral), *r);
+	// union: absorbing element
+	assert_eq!(R::union(r, absorbing), *absorbing);
+	// union: idempotence
+	assert_eq!(R::union(r, r), *r);
+	// union: associativity
+	assert_eq!(
+		R::union(a, &R::union(b, c)),
+		R::union(&R::union(a, b), c),
+	);
+	// union: commutativity
+	assert_eq!(R::union(a, b), R::union(b, a));
+}
+
+pub fn intersection<P, Q, R, S, T>(neutral: &P, absorbing: &Q, a: &R, b: &S, c: &T)
+where P: Endorelation + std::fmt::Debug,
+      Q: Endorelation + std::fmt::Debug,
+      R: Endorelation + std::fmt::Debug,
+      S: Endorelation + std::fmt::Debug,
+      T: Endorelation + std::fmt::Debug,
+{
+	let r = a;
+	assert!(r.is_homogeneous());
+
+	// intersection: neutral element
+	assert_eq!(R::intersection(r, neutral), *r);
+	// intersection: absorbing element
+	assert_eq!(R::intersection(r, absorbing), *absorbing);
+	// intersection: idempotence
+	assert_eq!(R::intersection(r, r), *r);
+	// intersection: associativity
+	assert_eq!(
+		R::intersection(a, &R::intersection(b, c)),
+		R::intersection(&R::intersection(a, b), c)
+	);
+	// intersection: commutativity
+	assert_eq!(R::intersection(a, b), R::intersection(b, a));
+}
+
+pub fn distributivity_union_intersection<R, S, T>(a: &R, b: &S, c: &T)
+where R: Endorelation + std::fmt::Debug,
+      S: Endorelation + std::fmt::Debug,
+      T: Endorelation + std::fmt::Debug,
+{
+	// left distributivity (union, intersection)
+	assert_eq!(
+		R::intersection(a, &R::union(b, c)),
+		R::union(&R::intersection(a, b), &R::intersection(a, c)),
+	);
+	// right distributivity (union, intersection)
+	assert_eq!(
+		R::intersection(&R::union(a, b), c),
+		R::union(&R::intersection(a, c), &R::intersection(b, c)),
+	);
+}
+
+pub fn de_morgan<R>(a: &R, b: &R)
+where R: Relation + std::fmt::Debug
+{
+	assert_eq!(
+		R::complement(&R::union(a, b)),
+		R::intersection(&R::complement(a), &R::complement(b)),
+	);
+	assert_eq!(
+		R::complement(&R::intersection(a, b)),
+		R::union(&R::complement(a), &R::complement(b)),
+	);
+}
+
 #[test]
-fn foobar() {
+fn relation_property_test() {
 	let n8: Vec<u8> = (1..=8).collect();
 	let s8: Set = (1..=8).map(|e| SetElement::from(e.to_string())).collect(); // oh boy
 
@@ -240,10 +320,11 @@ fn foobar() {
 	let div = RelationVec::from_predicate(&n8, |(&x, &y)| y % x == 0);
 	let le = RelationVec::from_predicate(&n8, |(&x, &y)| x <= y);
 	let ge = RelationVec::from_predicate(&n8, |(&x, &y)| x >= y);
-	relax::relation::relation_tabular::tests::union(&empty, &universal, &div, &le, &ge);
-	relax::relation::relation_tabular::tests::intersection(&universal, &empty, &div, &le, &ge);
-	relax::relation::relation_tabular::tests::distributivity_union_intersection(&div, &le, &ge);
-	relax::relation::relation_tabular::tests::de_morgan(&div, &le);
+
+	union(&empty, &universal, &div, &le, &ge);
+	intersection(&universal, &empty, &div, &le, &ge);
+	distributivity_union_intersection(&div, &le, &ge);
+	de_morgan(&div, &le);
 
 	let lt = RelationVec::from_predicate(&n8, |(&x, &y)| x < y);
 	assert_eq!(

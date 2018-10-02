@@ -1,6 +1,6 @@
 use relation::relation::Relation;
 
-use set;
+use set::Set;
 use relation::empty::Empty;
 use relation::universal::Universal;
 use relation::identity::Identity;
@@ -23,14 +23,14 @@ pub trait Endorelation : Relation {
 	fn is_lattice(&self) -> bool; // TODO? Result
 	fn is_sublattice<R: Endorelation>(&self, other: &R) -> bool; // TODO? Result
 
-	fn empty(domain: &Vec<set::SetElement>) -> Empty {
-		Empty::new(domain)
+	fn empty(set: &Set) -> Empty {
+		Empty::new(set)
 	}
-	fn universal(domain: &Vec<set::SetElement>) -> Universal {
-		Universal::new(domain)
+	fn universal(set: &Set) -> Universal {
+		Universal::new(set)
 	}
-	fn identity(domain: &Vec<set::SetElement>) -> Identity {
-		Identity::new(domain)
+	fn identity(set: &Set) -> Identity {
+		Identity::new(set)
 	}
 	
 	//fn closure_reflexive<R: Endorelation>(r: &R) -> Union { R::union(r, &R::identity) }

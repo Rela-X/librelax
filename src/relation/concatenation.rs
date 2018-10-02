@@ -1,4 +1,4 @@
-use SetElement;
+use Set;
 use relation::Relation;
 use relation::relation_tabular::RelationTabular;
 
@@ -24,11 +24,11 @@ impl<'a, P, Q> RelationTabular for Concatenation<'a, P, Q>
 where P: RelationTabular,
       Q: RelationTabular,
 {
-	fn get_domain(&self) -> (&[SetElement], &[SetElement]) {
+	fn get_domain(&self) -> (&Set, &Set) {
 		(self.p.get_domain().0, self.q.get_domain().1)
 	}
 	fn eval_at(&self, ix: usize, iy: usize) -> bool {
-		self.p.eval_at(ix, iy) && (0..self.q.get_domain().1.len()).any(|iz| self.q.eval_at(iy, iz))
+		self.p.eval_at(ix, iy) && (self.q.iys()).any(|iz| self.q.eval_at(iy, iz))
 	}
 }
 

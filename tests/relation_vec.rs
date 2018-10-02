@@ -206,7 +206,7 @@ fn relation_divisible() {
 #[test]
 fn new_endorelation() {
 	let n8: Vec<usize> = (1..=8).collect();
-	let s8: Vec<SetElement> = (1..=8).map(|e| SetElement::from(e.to_string())).collect(); // oh boy
+	let s8: Set = (1..=8).map(|e| SetElement::from(e.to_string())).collect(); // oh boy
 	let top = RelationVec::from_predicate(&n8, |(&x, &y)| x >= y);
 	let bot = RelationVec::from_predicate(&n8, |(&x, &y)| x <= y);
 
@@ -253,7 +253,7 @@ fn new_endorelation() {
 #[test]
 fn foobar() {
 	let n8: Vec<u8> = (1..=8).collect();
-	let s8: Vec<SetElement> = (1..=8).map(|e| SetElement::from(e.to_string())).collect(); // oh boy
+	let s8: Set = (1..=8).map(|e| SetElement::from(e.to_string())).collect(); // oh boy
 
 	let empty = RelationVec::empty(&s8);
 	let universal = RelationVec::universal(&s8);

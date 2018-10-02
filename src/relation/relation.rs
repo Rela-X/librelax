@@ -42,8 +42,8 @@ pub trait Relation {
 		Converse::new(r)
 	}
 	fn concatenation<'a, P, Q>(p: &'a P, q: &'a Q) -> Concatenation<'a, P, Q>
-	where P: 'a + Relation,
-	      Q: 'a + Relation,
+	where P: Relation,
+	      Q: Relation,
 	{
 		Concatenation::new(p, q)
 	}

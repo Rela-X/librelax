@@ -1,14 +1,14 @@
 use std;
 
-use set;
+use set::{Set, SetElement};
 use relation::relation::Relation;
 use relation::endorelation::Endorelation;
 
 pub trait RelationTabular {
-	fn get_domain(&self) -> (&[set::SetElement], &[set::SetElement]);
+	fn get_domain(&self) -> (&Set, &Set);
 	fn eval_at(&self, ix: usize, iy: usize) -> bool;
-	fn ixs(&self) -> std::ops::Range<usize> { 0..self.get_domain().0.len() }
-	fn iys(&self) -> std::ops::Range<usize> { 0..self.get_domain().1.len() }
+	fn ixs(&self) -> std::ops::Range<usize> { 0..self.get_domain().0.cardinality() }
+	fn iys(&self) -> std::ops::Range<usize> { 0..self.get_domain().1.cardinality() }
 }
 
 macro_rules! cross {
@@ -25,7 +25,7 @@ macro_rules! cross_uniq {
 impl<R> Relation for R
 where R: RelationTabular,
 {
-	fn eval(&self, x: &set::SetElement, y: &set::SetElement) -> bool {
+	fn eval(&self, x: &SetElement, y: &SetElement) -> bool {
 		let ix = self.get_domain().0.iter().position(|e| e == x).unwrap();
 		let iy = self.get_domain().1.iter().position(|e| e == y).unwrap();
 		return self.eval_at(ix, iy);
@@ -115,7 +115,7 @@ where R: RelationTabular,
 		)
 		/*
 		if !self.is_homogeneous() { return false; }
-		for ix in 1..self.get_domain().0.len() {
+		for ix in 1..self.get_domain().0.cardinality() {
 			for iy in 0..ix {
 				if self.eval_at(ix, iy) && self.eval_at(iy, ix) {
 					return false;
@@ -167,7 +167,7 @@ where R: RelationTabular,
 		if !self.is_homogeneous() { return false; }
 		for (ix, iy) in cross!(self.ixs(), self.iys()) {
 			if !self.eval_at(ix, iy) { continue; }
-			for iz in (ix+1)..self.get_domain().0.len() {
+			for iz in (ix+1)..self.get_domain().0.cardinality() {
 				if !self.eval_at(iz, iy) { continue; }
 				for iw in self.ixs() {
 					if self.eval_at(ix, iw) != self.eval_at(iz, iw) {

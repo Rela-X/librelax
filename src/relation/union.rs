@@ -1,4 +1,4 @@
-use set;
+use Set;
 use relation::Relation;
 use relation::relation_tabular::RelationTabular;
 
@@ -24,7 +24,7 @@ impl<'a, P, Q> RelationTabular for Union<'a, P, Q>
 where P: RelationTabular,
       Q: RelationTabular,
 {
-	fn get_domain(&self) -> (&[set::SetElement], &[set::SetElement]) {
+	fn get_domain(&self) -> (&Set, &Set) {
 		self.p.get_domain()
 	}
 	fn eval_at(&self, ix: usize, iy: usize) -> bool {

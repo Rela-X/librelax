@@ -1,15 +1,13 @@
-use std::vec::Vec;
-
-use SetElement;
+use Set;
 use relation::RelationTabular;
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Identity<'a> {
-	set: &'a Vec<SetElement>,
+	set: &'a Set,
 }
 
 impl<'a> Identity<'a> {
-	pub fn new(set: &Vec<SetElement>) -> Identity {
+	pub fn new(set: &Set) -> Identity {
 		Identity {
 			set: set,
 		}
@@ -17,7 +15,7 @@ impl<'a> Identity<'a> {
 }
 
 impl<'a> RelationTabular for Identity<'a> {
-	fn get_domain(&self) -> (&[SetElement], &[SetElement]) {
+	fn get_domain(&self) -> (&Set, &Set) {
 		(&self.set, &self.set)
 	}
 	fn eval_at(&self, ix: usize, iy: usize) -> bool {

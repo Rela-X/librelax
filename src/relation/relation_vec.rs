@@ -2,19 +2,19 @@ use std::vec::Vec;
 use std::fmt;
 use std::string::ToString;
 
-use SetElement;
+use set::{Set, SetElement};
 use relation::Relation;
 use relation::RelationTabular;
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct RelationVec {
 //	homogeneous: Option<bool>,
-	domain: (Vec<SetElement>, Vec<SetElement>),
+	domain: (Set, Set),
 	table: Vec<bool>,
 }
 
 impl RelationVec {
-	pub fn new(p: Vec<SetElement>, q: Vec<SetElement>, table: Vec<bool>) -> RelationVec {
+	pub fn new(p: Set, q: Set, table: Vec<bool>) -> RelationVec {
 		RelationVec {
 			domain: (p, q),
 			table: table,
@@ -34,13 +34,13 @@ impl RelationVec {
 		}
 	}
 	fn get_table_index(&self, ix: usize, iy: usize) -> usize {
-		ix * self.domain.0.len() + iy
+		ix * self.domain.0.cardinality() + iy
 	}
 
 }
 
 impl RelationTabular for RelationVec {
-	fn get_domain(&self) -> (&[SetElement], &[SetElement]) {
+	fn get_domain(&self) -> (&Set, &Set) {
 		(&self.domain.0, &self.domain.1)
 	}
 	fn eval_at(&self, ix: usize, iy: usize) -> bool {

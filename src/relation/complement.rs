@@ -1,4 +1,4 @@
-use SetElement;
+use Set;
 use relation::Relation;
 use relation::relation_tabular::RelationTabular;
 
@@ -20,7 +20,7 @@ where R: 'a + Relation,
 impl<'a, R> RelationTabular for Complement<'a, R>
 where R: RelationTabular,
 {
-	fn get_domain(&self) -> (&[SetElement], &[SetElement]) {
+	fn get_domain(&self) -> (&Set, &Set) {
 		self.r.get_domain()
 	}
 	fn eval_at(&self, ix: usize, iy: usize) -> bool {

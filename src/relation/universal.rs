@@ -1,15 +1,13 @@
-use std::vec::Vec;
-
-use set::SetElement;
+use Set;
 use relation::RelationTabular;
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Universal<'a> {
-	set: &'a Vec<SetElement>,
+	set: &'a Set,
 }
 
 impl<'a> Universal<'a> {
-	pub fn new(set: &Vec<SetElement>) -> Universal {
+	pub fn new(set: &Set) -> Universal {
 		Universal {
 			set: set,
 		}
@@ -17,7 +15,7 @@ impl<'a> Universal<'a> {
 }
 
 impl<'a> RelationTabular for Universal<'a> {
-	fn get_domain(&self) -> (&[SetElement], &[SetElement]) {
+	fn get_domain(&self) -> (&Set, &Set) {
 		(&self.set, &self.set)
 	}
 	fn eval_at(&self, ix: usize, iy: usize) -> bool {

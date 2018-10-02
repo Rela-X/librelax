@@ -230,15 +230,16 @@ fn new_endorelation() {
 	);
 }
 
-pub fn union<P, Q, R, S, T>(neutral: &P, absorbing: &Q, a: &R, b: &S, c: &T)
-where P: Endorelation + std::fmt::Debug,
-      Q: Endorelation + std::fmt::Debug,
-      R: Endorelation + std::fmt::Debug,
+pub fn union<R, S, T>(a: &R, b: &S, c: &T)
+where R: Endorelation + std::fmt::Debug,
       S: Endorelation + std::fmt::Debug,
       T: Endorelation + std::fmt::Debug,
 {
 	let r = a;
 	assert!(r.is_homogeneous());
+
+	let neutral = &R::empty(r.get_domain().0);
+	let absorbing = &R::universal(r.get_domain().0);
 
 	// union: neutral element
 	assert_eq!(R::union(r, neutral), *r);
@@ -255,15 +256,16 @@ where P: Endorelation + std::fmt::Debug,
 	assert_eq!(R::union(a, b), R::union(b, a));
 }
 
-pub fn intersection<P, Q, R, S, T>(neutral: &P, absorbing: &Q, a: &R, b: &S, c: &T)
-where P: Endorelation + std::fmt::Debug,
-      Q: Endorelation + std::fmt::Debug,
-      R: Endorelation + std::fmt::Debug,
+pub fn intersection<R, S, T>(a: &R, b: &S, c: &T)
+where R: Endorelation + std::fmt::Debug,
       S: Endorelation + std::fmt::Debug,
       T: Endorelation + std::fmt::Debug,
 {
 	let r = a;
 	assert!(r.is_homogeneous());
+	
+	let neutral = &R::universal(r.get_domain().0);
+	let absorbing = &R::empty(r.get_domain().0);
 
 	// intersection: neutral element
 	assert_eq!(R::intersection(r, neutral), *r);
@@ -315,14 +317,12 @@ fn relation_property_test() {
 	let n8: Vec<u8> = (1..=8).collect();
 	let s8: Set = (1..=8).map(|e| SetElement::from(e.to_string())).collect(); // oh boy
 
-	let empty = RelationVec::empty(&s8);
-	let universal = RelationVec::universal(&s8);
 	let div = RelationVec::from_predicate(&n8, |(&x, &y)| y % x == 0);
 	let le = RelationVec::from_predicate(&n8, |(&x, &y)| x <= y);
 	let ge = RelationVec::from_predicate(&n8, |(&x, &y)| x >= y);
 
-	union(&empty, &universal, &div, &le, &ge);
-	intersection(&universal, &empty, &div, &le, &ge);
+	union(&div, &le, &ge);
+	intersection(&div, &le, &ge);
 	distributivity_union_intersection(&div, &le, &ge);
 	de_morgan(&div, &le);
 

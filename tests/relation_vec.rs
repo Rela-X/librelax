@@ -174,7 +174,7 @@ fn is_function() {}
 
 #[test]
 fn relation_mod8_equal() {
-	let n32: Vec<u32> = (1..=32).collect::<Vec<_>>();
+	let n32: Vec<u8> = (1..=32).collect::<Vec<_>>();
 	let r = RelationVec::from_predicate(&n32, |(&x, &y)| x % 8 == y % 8);
 	// TODO verify
 	assert!(r.is_reflexive());
@@ -189,7 +189,7 @@ fn relation_mod8_equal() {
 }
 #[test]
 fn relation_divisible() {
-	let n32: Vec<u32> = (1..=32).collect::<Vec<_>>();
+	let n32: Vec<u8> = (1..=32).collect::<Vec<_>>();
 	let r = RelationVec::from_predicate(&n32, |(&x, &y)| y % x == 0);
 	assert!(r.is_reflexive());
 	assert!(!r.is_irreflexive());
@@ -205,7 +205,7 @@ fn relation_divisible() {
 
 #[test]
 fn new_endorelation() {
-	let n8: Vec<usize> = (1..=8).collect();
+	let n8: Vec<u8> = (1..=8).collect();
 	let s8: Set = (1..=8).map(|e| SetElement::from(e.to_string())).collect(); // oh boy
 	let top = RelationVec::from_predicate(&n8, |(&x, &y)| x >= y);
 	let bot = RelationVec::from_predicate(&n8, |(&x, &y)| x <= y);

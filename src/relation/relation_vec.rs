@@ -25,7 +25,7 @@ impl RelationVec {
 	      P: FnMut((&T, &T)) -> bool,
 	{
 		RelationVec {
-			domain: (set.iter().map(|e| SetElement::from(e as &ToString)).collect(), set.iter().map(|e| SetElement::from(e as &ToString)).collect()),
+			domain: (set.iter().map(T::to_string).collect(), set.iter().map(T::to_string).collect()),
 			table: (0..set.len().pow(2))
 				.map(|i| (i / set.len(), i % set.len()))
 				.map(|(ix, iy)| (&set[ix], &set[iy]))

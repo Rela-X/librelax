@@ -62,6 +62,8 @@ impl fmt::Display for SetElement {
 	}
 }
 
+// TODO find more generic SetElement::from(_) implementations
+
 impl From<String> for SetElement {
 	fn from(s: String) -> SetElement {
 		SetElement::Str(s)

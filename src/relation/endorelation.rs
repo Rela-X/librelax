@@ -130,7 +130,7 @@ impl<'a> Relation for Empty<'a> {
 	fn get_domain(&self) -> (&Set, &Set) {
 		(&self.set, &self.set)
 	}
-	fn eval_at(&self, ix: usize, iy: usize) -> bool {
+	fn eval_at(&self, _ix: usize, _iy: usize) -> bool {
 		false
 	}
 }
@@ -160,7 +160,7 @@ impl<'a> Relation for Universal<'a> {
 	fn get_domain(&self) -> (&Set, &Set) {
 		(&self.set, &self.set)
 	}
-	fn eval_at(&self, ix: usize, iy: usize) -> bool {
+	fn eval_at(&self, _ix: usize, _iy: usize) -> bool {
 		true
 	}
 }

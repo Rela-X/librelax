@@ -19,6 +19,15 @@ impl RelationVec {
 			table: table,
 		}
 	}
+	pub fn from_relation<R: Relation>(r: &R) -> Self {
+		RelationVec {
+			domain: (r.get_domain().0.clone(), r.get_domain().1.clone()),
+			table: (0..(r.get_domain().0.cardinality() * r.get_domain().1.cardinality()))
+				.map(|i| (i / r.get_domain().0.cardinality(), i % r.get_domain().1.cardinality()))
+				.map(|(ix, iy)| r.eval_at(ix, iy))
+				.collect(),
+		}
+	}
 	pub fn from_predicate<'a, T, P>(set: &'a[T], predicate: P) -> Self
 	where T: ToString,
 	      P: FnMut((&T, &T)) -> bool,

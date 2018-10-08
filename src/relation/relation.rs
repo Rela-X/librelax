@@ -81,6 +81,51 @@ pub trait Relation {
 	fn is_bijective(&self) -> bool { self.is_injective() && self.is_surjective() }
 	fn is_function(&self) -> bool { self.is_functional() && self.is_lefttotal() }
 
+	fn source(&self) -> Set {
+		self.get_domain().0.iter().enumerate()
+			.filter(
+				|&(ix, _)| self.iys().any(
+					|iy| self.eval_at(ix, iy)
+				)
+			)
+			.map(|(_, x)| x)
+			.cloned()
+			.collect()
+	}
+	fn range(&self) -> Set {
+		self.get_domain().1.iter().enumerate()
+			.filter(
+				|&(iy, _)| self.ixs().any(
+					|ix| self.eval_at(ix, iy)
+				)
+			)
+			.map(|(_, y)| y)
+			.cloned()
+			.collect()
+	}
+	fn image(&self) -> Set {
+		self.get_domain().0.iter().enumerate()
+			.filter(
+				|&(ix, _)| self.iys().all(
+					|iy| self.eval_at(ix, iy)
+				)
+			)
+			.map(|(_, x)| x)
+			.cloned()
+			.collect()
+	}
+	fn preimage(&self) -> Set {
+		self.get_domain().1.iter().enumerate()
+			.filter(
+				|&(iy, _)| self.ixs().all(
+					|ix| self.eval_at(ix, iy)
+				)
+			)
+			.map(|(_, y)| y)
+			.cloned()
+			.collect()
+	}
+
 	fn complement<R>(r: &R) -> Complement<R>
 	where R: Relation,
 	{

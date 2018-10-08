@@ -13,7 +13,7 @@ pub struct RelationVec {
 }
 
 impl RelationVec {
-	pub fn new(p: Set, q: Set, table: Vec<bool>) -> RelationVec {
+	pub fn new(p: Set, q: Set, table: Vec<bool>) -> Self {
 		RelationVec {
 			domain: (p, q),
 			table: table,

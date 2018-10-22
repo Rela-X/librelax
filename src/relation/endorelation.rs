@@ -2,6 +2,7 @@ use std;
 
 use set::Set;
 use relation::Relation;
+use relation::relation::{Complement, Concatenation, Converse, Intersection, Union};
 
 macro_rules! cross {
 	($p:expr, $q:expr) => ($p.flat_map(
@@ -120,6 +121,12 @@ pub trait Endorelation : Relation {
 	//fn closure_difunctional<R: Endorelation>(r: &R) -> R {}
 	//fn closure_biorder<R: Endorelation>(r: &R) -> R {}
 }
+
+impl<'a, R: 'a + Relation> Endorelation for Complement<'a, R> {}
+impl<'a, P: 'a + Relation, Q: 'a + Relation> Endorelation for Concatenation<'a, P, Q> {}
+impl<'a, R: 'a + Relation> Endorelation for Converse<'a, R> {}
+impl<'a, P: 'a + Relation, Q: 'a + Relation> Endorelation for Intersection<'a, P, Q> {}
+impl<'a, P: 'a + Relation, Q: 'a + Relation> Endorelation for Union<'a, P, Q> {}
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Empty<'a> {

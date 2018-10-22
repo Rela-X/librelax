@@ -60,7 +60,7 @@ impl Relation for RelationVec {
 impl Endorelation for RelationVec {}
 
 impl fmt::Display for RelationVec {
-	fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 		write!(f, "[TODO] fmt::Display for RelationVec :)")
 	}
 }

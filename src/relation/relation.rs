@@ -1,8 +1,9 @@
 use std;
+use std::borrow::Cow;
 
 use set::{Set, SetElement};
 
-pub trait Relation {
+pub trait Relation : Clone {
 	fn get_domain(&self) -> (&Set, &Set);
 	fn eval(&self, x: &SetElement, y: &SetElement) -> bool {
 		// TODO O(log n) should be possible here
@@ -129,30 +130,30 @@ pub trait Relation {
 	fn complement<R>(r: &R) -> Complement<R>
 	where R: Relation,
 	{
-		Complement { r: r }
+		Complement::new(r)
 	}
 	fn concatenation<'a, P, Q>(p: &'a P, q: &'a Q) -> Concatenation<'a, P, Q>
 	where P: Relation,
 	      Q: Relation,
 	{
-		Concatenation { p: p, q: q }
+		Concatenation::new(p, q)
 	}
 	fn converse<R>(r: &R) -> Converse<R>
 	where R: Relation,
 	{
-		Converse { r: r }
+		Converse::new(r)
 	}
 	fn intersection<'a, P, Q>(p: &'a P, q: &'a Q) -> Intersection<'a, P, Q>
 	where P: Relation,
 	      Q: Relation,
 	{
-		Intersection { p: p, q: q }
+		Intersection::new(p, q)
 	}
 	fn union<'a, P, Q>(p: &'a P, q: &'a Q) -> Union<'a, P, Q>
 	where P: Relation,
 	      Q: Relation,
 	{
-		Union { p: p, q: q }
+		Union::new(p, q)
 	}
 }
 
@@ -166,9 +167,15 @@ fn eq<P: Relation, Q: Relation>(p: &P, q: &Q) -> bool {
 	return true;
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Complement<'a, R: 'a + Relation> {
-	r: &'a R,
+	r: Cow<'a, R>,
+}
+
+impl<'a, R: 'a + Relation> Complement<'a, R> {
+	fn new<T: Into<Cow<'a, R>>>(t: T) -> Self {
+		Complement { r: t.into() }
+	}
 }
 
 impl<'a, R: 'a + Relation> Relation for Complement<'a, R> {
@@ -184,10 +191,27 @@ impl<'a, R: Relation, T: Relation> PartialEq<R> for Complement<'a, T> {
 	fn eq(&self, other: &R) -> bool { eq(self, other) }
 }
 
-#[derive(Debug)]
+impl<'a, R: 'a + Relation> Into<Cow<'a, Complement<'a, R>>> for Complement<'a, R> {
+	fn into(self) -> Cow<'a, Complement<'a, R>> {
+		Cow::Owned(self)
+	}
+}
+impl<'a, R: 'a + Relation> Into<Cow<'a, Complement<'a, R>>> for &'a Complement<'a, R> {
+	fn into(self) -> Cow<'a, Complement<'a, R>> {
+		Cow::Borrowed(self)
+	}
+}
+
+#[derive(Clone, Debug)]
 pub struct Concatenation<'a, P: 'a + Relation, Q: 'a + Relation> {
-	p: &'a P,
-	q: &'a Q,
+	p: Cow<'a, P>,
+	q: Cow<'a, Q>,
+}
+
+impl<'a, P: 'a + Relation, Q: 'a + Relation> Concatenation<'a, P, Q> {
+	pub fn new<S: Into<Cow<'a, P>>, T: Into<Cow<'a, Q>>>(s: S, t: T) -> Self {
+		Concatenation { p: s.into(), q: t.into() }
+	}
 }
 
 impl<'a, P: 'a + Relation, Q: 'a + Relation> Relation for Concatenation<'a, P, Q> {
@@ -203,9 +227,26 @@ impl<'a, R: Relation, S: Relation, T: Relation> PartialEq<R> for Concatenation<'
 	fn eq(&self, other: &R) -> bool { eq(self, other) }
 }
 
-#[derive(Debug)]
+impl<'a, P: 'a + Relation, Q: 'a + Relation> Into<Cow<'a, Concatenation<'a, P, Q>>> for Concatenation<'a, P, Q> {
+	fn into(self) -> Cow<'a, Concatenation<'a, P, Q>> {
+		Cow::Owned(self)
+	}
+}
+impl<'a, P: 'a + Relation, Q: 'a + Relation> Into<Cow<'a, Concatenation<'a, P, Q>>> for &'a Concatenation<'a, P, Q> {
+	fn into(self) -> Cow<'a, Concatenation<'a, P, Q>> {
+		Cow::Borrowed(self)
+	}
+}
+
+#[derive(Clone, Debug)]
 pub struct Converse<'a, R: 'a + Relation> {
-	r: &'a R,
+	r: Cow<'a, R>,
+}
+
+impl<'a, R: 'a + Relation> Converse<'a, R> {
+	fn new<T: Into<Cow<'a, R>>>(t: T) -> Self {
+		Converse { r: t.into() }
+	}
 }
 
 impl<'a, R: 'a + Relation> Relation for Converse<'a, R> {
@@ -221,10 +262,27 @@ impl<'a, R: Relation, T: Relation> PartialEq<R> for Converse<'a, T> {
 	fn eq(&self, other: &R) -> bool { eq(self, other) }
 }
 
-#[derive(Debug)]
+impl<'a, R: 'a + Relation> Into<Cow<'a, Converse<'a, R>>> for Converse<'a, R> {
+	fn into(self) -> Cow<'a, Converse<'a, R>> {
+		Cow::Owned(self)
+	}
+}
+impl<'a, R: 'a + Relation> Into<Cow<'a, Converse<'a, R>>> for &'a Converse<'a, R> {
+	fn into(self) -> Cow<'a, Converse<'a, R>> {
+		Cow::Borrowed(self)
+	}
+}
+
+#[derive(Clone, Debug)]
 pub struct Intersection<'a, P: 'a + Relation, Q: 'a + Relation> {
-	p: &'a P,
-	q: &'a Q,
+	p: Cow<'a, P>,
+	q: Cow<'a, Q>,
+}
+
+impl<'a, P: 'a + Relation, Q: 'a + Relation> Intersection<'a, P, Q> {
+	pub fn new<S: Into<Cow<'a, P>>, T: Into<Cow<'a, Q>>>(s: S, t: T) -> Self {
+		Intersection { p: s.into(), q: t.into() }
+	}
 }
 
 impl<'a, P: 'a + Relation, Q: 'a + Relation> Relation for Intersection<'a, P, Q> {
@@ -240,10 +298,27 @@ impl<'a, R: Relation, S: Relation, T: Relation> PartialEq<R> for Intersection<'a
 	fn eq(&self, other: &R) -> bool { eq(self, other) }
 }
 
-#[derive(Debug)]
+impl<'a, P: 'a + Relation, Q: 'a + Relation> Into<Cow<'a, Intersection<'a, P, Q>>> for Intersection<'a, P, Q> {
+	fn into(self) -> Cow<'a, Intersection<'a, P, Q>> {
+		Cow::Owned(self)
+	}
+}
+impl<'a, P: 'a + Relation, Q: 'a + Relation> Into<Cow<'a, Intersection<'a, P, Q>>> for &'a Intersection<'a, P, Q> {
+	fn into(self) -> Cow<'a, Intersection<'a, P, Q>> {
+		Cow::Borrowed(self)
+	}
+}
+
+#[derive(Clone, Debug)]
 pub struct Union<'a, P: 'a + Relation, Q: 'a + Relation> {
-	p: &'a P,
-	q: &'a Q,
+	p: Cow<'a, P>,
+	q: Cow<'a, Q>,
+}
+
+impl<'a, P: 'a + Relation, Q: 'a + Relation> Union<'a, P, Q> {
+	pub fn new<S: Into<Cow<'a, P>>, T: Into<Cow<'a, Q>>>(s: S, t: T) -> Self {
+		Union { p: s.into(), q: t.into() }
+	}
 }
 
 impl<'a, P: 'a + Relation, Q: 'a + Relation> Relation for Union<'a, P, Q> {
@@ -257,6 +332,17 @@ impl<'a, P: 'a + Relation, Q: 'a + Relation> Relation for Union<'a, P, Q> {
 
 impl<'a, R: Relation, S: Relation, T: Relation> PartialEq<R> for Union<'a, S, T> {
 	fn eq(&self, other: &R) -> bool { eq(self, other) }
+}
+
+impl<'a, P: 'a + Relation, Q: 'a + Relation> Into<Cow<'a, Union<'a, P, Q>>> for Union<'a, P, Q> {
+	fn into(self) -> Cow<'a, Union<'a, P, Q>> {
+		Cow::Owned(self)
+	}
+}
+impl<'a, P: 'a + Relation, Q: 'a + Relation> Into<Cow<'a, Union<'a, P, Q>>> for &'a Union<'a, P, Q> {
+	fn into(self) -> Cow<'a, Union<'a, P, Q>> {
+		Cow::Borrowed(self)
+	}
 }
 
 mod tests {

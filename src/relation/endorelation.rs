@@ -1,4 +1,5 @@
 use std;
+use std::borrow::Cow;
 
 use set::Set;
 use relation::Relation;
@@ -14,6 +15,7 @@ macro_rules! cross_uniq {
 		|(i, e)| std::iter::repeat(e).zip($q.skip(i+1))
 	))
 }
+
 
 pub trait Endorelation : Relation {
 	fn is_reflexive(&self) -> bool { /* xRx */
@@ -115,9 +117,16 @@ pub trait Endorelation : Relation {
 	fn identity(set: &Set) -> Identity {
 		Identity { set: set }
 	}
-	
-	//fn closure_reflexive<R: Endorelation>(r: &R) -> Union { R::union(r, &R::identity) }
-	//fn closure_symmetric<R: Endorelation>(r: &R) -> Union { R::union(r, &R::converse(r)) }
+
+	// TODO Explicit call to Cow-constructor should be unneeded
+	fn closure_reflexive<R: Endorelation>(r: &R) -> Union<R, Identity> {
+		let id = R::identity(r.get_domain().0);
+		return Union::new(Cow::Borrowed(r), id);
+	}
+	fn closure_symmetric<R: Endorelation>(r: &R) -> Union<R, Converse<R>> {
+		let conv = R::converse(r);
+		return Union::new(Cow::Borrowed(r), conv);
+	}
 	//fn closure_difunctional<R: Endorelation>(r: &R) -> R {}
 	//fn closure_biorder<R: Endorelation>(r: &R) -> R {}
 }
@@ -143,6 +152,17 @@ impl<'a> Relation for Empty<'a> {
 }
 impl<'a> Endorelation for Empty<'a> {}
 
+impl<'a> Into<Cow<'a, Empty<'a>>> for Empty<'a> {
+	fn into(self) -> Cow<'a, Empty<'a>> {
+		Cow::Owned(self)
+	}
+}
+impl<'a> Into<Cow<'a, Empty<'a>>> for &'a Empty<'a> {
+	fn into(self) -> Cow<'a, Empty<'a>> {
+		Cow::Borrowed(self)
+	}
+}
+
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Identity<'a> {
 	set: &'a Set,
@@ -158,6 +178,17 @@ impl<'a> Relation for Identity<'a> {
 }
 impl<'a> Endorelation for Identity<'a> {}
 
+impl<'a> Into<Cow<'a, Identity<'a>>> for Identity<'a> {
+	fn into(self) -> Cow<'a, Identity<'a>> {
+		Cow::Owned(self)
+	}
+}
+impl<'a> Into<Cow<'a, Identity<'a>>> for &'a Identity<'a> {
+	fn into(self) -> Cow<'a, Identity<'a>> {
+		Cow::Borrowed(self)
+	}
+}
+
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Universal<'a> {
 	set: &'a Set,
@@ -172,6 +203,17 @@ impl<'a> Relation for Universal<'a> {
 	}
 }
 impl<'a> Endorelation for Universal<'a> {}
+
+impl<'a> Into<Cow<'a, Self>> for Universal<'a> {
+	fn into(self) -> Cow<'a, Self> {
+		Cow::Owned(self)
+	}
+}
+impl<'a> Into<Cow<'a, Universal<'a>>> for &'a Universal<'a> {
+	fn into(self) -> Cow<'a, Universal<'a>> {
+		Cow::Borrowed(self)
+	}
+}
 
 mod tests {
 	use super::*;

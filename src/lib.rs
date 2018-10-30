@@ -2,6 +2,7 @@
 
 pub mod set;
 pub mod relation;
+pub mod tex;
 
 pub use relation::Relation;
 pub use relation::Endorelation;

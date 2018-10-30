@@ -26,6 +26,9 @@ impl Set {
 	pub fn is_subset(&self, other: &Set) -> bool {
 		self.0.is_subset(&other.0)
 	}
+	pub fn union<'a>(&'a self, other: &'a Set) -> ::std::collections::btree_set::Union<'a, SetElement> {
+		self.0.union(&other.0)
+	}
 	pub fn intersection<'a>(&'a self, other: &'a Set) -> ::std::collections::btree_set::Intersection<'a, SetElement> {
 		self.0.intersection(&other.0)
 	}

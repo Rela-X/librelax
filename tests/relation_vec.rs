@@ -186,7 +186,7 @@ fn relation_divisible() {
 #[test]
 fn new_endorelation() {
 	let n8: Vec<u8> = (1..=8).collect();
-	let s8: Set = (1..=8).map(|e| SetElement::from(e.to_string())).collect(); // oh boy
+	let s8: Set = (1..=8).map(|i| i.to_string()).collect();
 	let top = RelationVec::from_predicate(&n8, |(&x, &y)| x >= y);
 	let bot = RelationVec::from_predicate(&n8, |(&x, &y)| x <= y);
 
@@ -315,7 +315,7 @@ where R: Relation + std::fmt::Debug
 #[test]
 fn relation_property_test() {
 	let n8: Vec<u8> = (1..=8).collect();
-	let s8: Set = (1..=8).map(|e| SetElement::from(e.to_string())).collect(); // oh boy
+	let s8: Set = (1..=8).map(|i| i.to_string()).collect();
 
 	let div = RelationVec::from_predicate(&n8, |(&x, &y)| y % x == 0);
 	let le = RelationVec::from_predicate(&n8, |(&x, &y)| x <= y);

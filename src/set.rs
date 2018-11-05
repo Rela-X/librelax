@@ -41,7 +41,7 @@ impl fmt::Display for Set {
 		if let Some(e) = it.next() {
 			write!(f, "{}", e)?;
 			for e in it {
-				write!(f, " {}", e)?;
+				write!(f, "{}{}", " ", e)?;
 			}
 		}
 		write!(f, "}}")

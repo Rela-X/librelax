@@ -2,7 +2,7 @@ use std::vec::Vec;
 use std::fmt;
 use std::string::ToString;
 
-use set::{Set, SetElement};
+use set::Set;
 use relation::{Relation, Endorelation};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -20,10 +20,11 @@ impl RelationVec {
 		}
 	}
 	pub fn from_relation<R: Relation>(r: &R) -> Self {
+		let d = r.get_domain();
 		RelationVec {
-			domain: (r.get_domain().0.clone(), r.get_domain().1.clone()),
-			table: (0..(r.get_domain().0.cardinality() * r.get_domain().1.cardinality()))
-				.map(|i| (i / r.get_domain().0.cardinality(), i % r.get_domain().1.cardinality()))
+			domain: (d.0.clone(), d.1.clone()),
+			table: (0..(d.0.cardinality() * d.1.cardinality()))
+				.map(|i| (i / d.0.cardinality(), i % d.1.cardinality()))
 				.map(|(ix, iy)| r.eval_at(ix, iy))
 				.collect(),
 		}

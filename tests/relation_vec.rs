@@ -18,7 +18,7 @@ fn is_reflexive() {
 		true,  true,  false,
 		false, false, true,
 	];
-	let r1 = RelationVec::new(set.clone(), set.clone(), table);
+	let r1 = RelationVec::new((set.clone(), set.clone()), table);
 	assert!(r1.is_reflexive());
 }
 #[test]
@@ -30,7 +30,7 @@ fn is_irreflexive() {
 		true,  true,  false, true,
 		false, true,  false, false,
 	];
-	let r1 = RelationVec::new(set.clone(), set.clone(), table);
+	let r1 = RelationVec::new((set.clone(), set.clone()), table);
 	assert!(r1.is_irreflexive());
 }
 #[test]
@@ -42,7 +42,7 @@ fn is_antisymmetric() {
 		true,  false, false, false,
 		false, true,  false, true,
 	];
-	let r1 = RelationVec::new(set.clone(), set.clone(), table);
+	let r1 = RelationVec::new((set.clone(), set.clone()), table);
 	assert!(r1.is_antisymmetric());
 }
 #[test]
@@ -54,7 +54,7 @@ fn is_transitive() {
 		true,  false, false, false,
 		true,  true,  true,  false,
 	];
-	let r1 = RelationVec::new(set.clone(), set.clone(), table);
+	let r1 = RelationVec::new((set.clone(), set.clone()), table);
 	assert!(r1.is_transitive());
 }
 
@@ -67,7 +67,7 @@ fn is_symmetric() {
 		true,  true,  false, false,
 		false, true,  false, true,
 	];
-	let r1 = RelationVec::new(set.clone(), set.clone(), table);
+	let r1 = RelationVec::new((set.clone(), set.clone()), table);
 	assert!(r1.is_symmetric());
 }
 #[test]
@@ -79,7 +79,7 @@ fn is_asymmetric() {
 		true,  false, false, false,
 		false, true,  false, false,
 	];
-	let r1 = RelationVec::new(set.clone(), set.clone(), table);
+	let r1 = RelationVec::new((set.clone(), set.clone()), table);
 	assert!(r1.is_asymmetric());
 }
 
@@ -93,7 +93,7 @@ fn is_preorder() {
 		false, false, true,  true,  false,
 		false, false, false, false, true,
 	];
-	let r1 = RelationVec::new(set.clone(), set.clone(), table);
+	let r1 = RelationVec::new((set.clone(), set.clone()), table);
 	assert!(r1.is_reflexive());
 	assert!(r1.is_transitive());
 	assert!(!r1.is_symmetric());
@@ -113,7 +113,7 @@ fn is_equivalent() {
 		true,  false, true,  true,  false,
 		false, false, false, false, true,
 	];
-	let r1 = RelationVec::new(set.clone(), set.clone(), table);
+	let r1 = RelationVec::new((set.clone(), set.clone()), table);
 	assert!(r1.is_reflexive());
 	assert!(r1.is_transitive());
 	assert!(r1.is_symmetric());
@@ -136,7 +136,7 @@ fn is_difunctional() {
 		false, false, false, true,  true,  false, false, false, false, false,
 		false, false, false, false, false, false, false, false, false, false,
 	];
-	let r1 = RelationVec::new(set.clone(), set.clone(), table);
+	let r1 = RelationVec::new((set.clone(), set.clone()), table);
 	assert!(r1.is_difunctional());
 }
 

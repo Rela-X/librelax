@@ -3,6 +3,7 @@
 pub mod set;
 pub mod relation;
 pub mod tex;
+pub mod random;
 
 pub use relation::Relation;
 pub use relation::Endorelation;

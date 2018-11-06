@@ -6,12 +6,12 @@ use relation::relation::{Complement, Concatenation, Converse, Intersection, Unio
 
 macro_rules! cross {
 	($p:expr, $q:expr) => ($p.flat_map(
-		|e| std::iter::repeat(e).zip($q.clone())
+		|e| std::iter::repeat(e).zip($q)
 	))
 }
 macro_rules! cross_uniq {
 	($p:expr, $q:expr) => ($p.enumerate().flat_map(
-		|(i, e)| std::iter::repeat(e).zip($q.skip(i+1).clone())
+		|(i, e)| std::iter::repeat(e).zip($q.skip(i+1))
 	))
 }
 

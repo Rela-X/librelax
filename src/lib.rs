@@ -4,6 +4,7 @@ pub mod set;
 pub mod relation;
 pub mod tex;
 pub mod random;
+mod cow;
 
 pub use relation::Relation;
 pub use relation::Endorelation;

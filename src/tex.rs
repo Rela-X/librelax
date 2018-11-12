@@ -9,7 +9,16 @@ pub trait ToTex<R: Relation> {
 	fn to_tex(&self) -> TeXWrapper<R>;
 }
 
-impl<R> ToTex<R> for R where R: Relation {
+// Implement ToTex for every Relation
+impl<R: Relation> ToTex<R> for R {
+	/// Create a wrapper-object that prints the [`Relation`]
+	/// in LaTeX format using the array-Environment.
+	///
+	/// # Examples
+	///
+	/// ```
+	/// println!("{}", r.to_tex());
+	/// ```
 	fn to_tex(&self) -> TeXWrapper<R> {
 		TeXWrapper(self)
 	}

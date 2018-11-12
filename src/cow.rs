@@ -1,13 +1,9 @@
 use std::borrow::Cow;
 use std::ops::Deref;
-use std::fmt::Debug;
 
-/*
- * A local wrapper around std::borrow::Cow
- * It is required to add blanket implementations
- * for all types used in Relax.
- * see E0210 and Rust-RFC 1023
- */
+/// A local wrapper around std::borrow::Cow
+/// It is required to add blanket implementations for all types used in Relax.
+/// see E0210 and Rust-RFC 1023
 #[derive(Clone, Debug)]
 pub struct LCow<'a, T: 'a + Clone>(Cow<'a, T>);
 

@@ -4,11 +4,21 @@ use set::Set;
 use relation::Relation;
 use relation::relation::{Complement, Concatenation, Converse, Intersection, Union};
 
+/// cross!(1..4, a..d) = (
+/// 	(1,a), (1,b), (1,c),
+/// 	(2,a), (2,b), (2,c),
+/// 	(3,a), (3,b), (3,c),
+/// )
 macro_rules! cross {
 	($p:expr, $q:expr) => ($p.flat_map(
 		|e| std::iter::repeat(e).zip($q)
 	))
 }
+/// cross_uniq!(1..4, a..d) = (
+/// 	     , (1,b), (1,c),
+/// 	     ,      , (2,c),
+/// 	     ,      ,      ,
+/// )
 macro_rules! cross_uniq {
 	($p:expr, $q:expr) => ($p.enumerate().flat_map(
 		|(i, e)| std::iter::repeat(e).zip($q.skip(i+1))
@@ -117,14 +127,20 @@ pub trait Endorelation : Relation {
 		Identity { set: set }
 	}
 
+	/// Reflexive closure: union(r, id)
 	fn closure_reflexive<R: Endorelation>(r: &R) -> Union<R, Identity> {
 		let id = R::identity(r.get_domain().0);
 		return Union::new(r, id);
 	}
+	/// Symmetric closure: union(r, converse(r))
 	fn closure_symmetric<R: Endorelation>(r: &R) -> Union<R, Converse<R>> {
 		let conv = R::converse(r);
 		return Union::new(r, conv);
 	}
+	/*
+	 * Other closures are more efficiently implemented on the
+	 * incidence matrices directly.
+	 */
 	//fn closure_difunctional<R: Endorelation>(r: &R) -> R {}
 	//fn closure_biorder<R: Endorelation>(r: &R) -> R {}
 }
@@ -135,6 +151,7 @@ impl<'a, R: 'a + Relation> Endorelation for Converse<'a, R> {}
 impl<'a, P: 'a + Relation, Q: 'a + Relation> Endorelation for Intersection<'a, P, Q> {}
 impl<'a, P: 'a + Relation, Q: 'a + Relation> Endorelation for Union<'a, P, Q> {}
 
+/// The [`Empty`] `Relation` E where xEy does not hold for any (x,y) ∈ X × Y
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Empty<'a> {
 	set: &'a Set,
@@ -150,6 +167,7 @@ impl<'a> Relation for Empty<'a> {
 }
 impl<'a> Endorelation for Empty<'a> {}
 
+/// The [`Identity`] `Relation` I where xIy iff x = y
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Identity<'a> {
 	set: &'a Set,
@@ -165,6 +183,7 @@ impl<'a> Relation for Identity<'a> {
 }
 impl<'a> Endorelation for Identity<'a> {}
 
+/// The [`Universal`] `Relation` U where xUy holds for all (x,y) ∈ X × Y
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Universal<'a> {
 	set: &'a Set,

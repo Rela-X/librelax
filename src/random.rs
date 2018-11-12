@@ -11,24 +11,26 @@ use relation::RelationVec;
 /// # Examples
 ///
 /// ```
-/// let s: Set = (1..3).map(|i| i.to_string()).collect();
-/// let r: RelationVec = generate_random((s.clone(), s.clone()), 0.5);
+/// let s: relax::Set = (1..3).map(|i| i.to_string()).collect();
+/// let r: relax::relation::RelationVec = relax::random::generate_random((s.clone(), s.clone()), 0.5);
 /// ```
 ///
 /// `p` = 0 creates the empty `Relation`.
 ///
 /// ```
-/// let s: Set = (1..3).map(|i| i.to_string()).collect();
-/// let r: RelationVec = generate_random((s.clone(), s.clone()), 0);
-/// assert!(r, RelationVec::empty(s));
+/// use relax::Endorelation;
+/// let s: relax::Set = (1..3).map(|i| i.to_string()).collect();
+/// let r: relax::RelationVec = relax::random::generate_random((s.clone(), s.clone()), 0.0);
+/// assert!(relax::relation::eq(&r, &relax::RelationVec::empty(&s)));
 /// ```
 ///
 /// `p` = 1 creates the universal `Relation`.
 ///
 /// ```
-/// let s: Set = (1..3).map(|i| i.to_string()).collect();
-/// let r: RelationVec = generate_random((s.clone(), s.clone()), 1);
-/// assert!(r, RelationVec::universal(s));
+/// use relax::Endorelation;
+/// let s: relax::Set = (1..3).map(|i| i.to_string()).collect();
+/// let r: relax::RelationVec = relax::random::generate_random((s.clone(), s.clone()), 1.0);
+/// assert!(relax::relation::eq(&r, &relax::RelationVec::universal(&s)));
 /// ```
 pub fn generate_random(domain: (Set, Set), p: f64) -> RelationVec {
 	let d = Bernoulli::new(p);

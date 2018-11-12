@@ -17,6 +17,9 @@ impl<R: Relation> ToTex<R> for R {
 	/// # Examples
 	///
 	/// ```
+	/// use relax::tex::ToTex;
+	///
+	/// let r = relax::RelationVec::from_predicate(&(1..5).collect::<Vec<_>>(), |(x, y)| x < y);
 	/// println!("{}", r.to_tex());
 	/// ```
 	fn to_tex(&self) -> TeXWrapper<R> {

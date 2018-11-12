@@ -1,6 +1,7 @@
 extern crate relax;
 
 use relax::Set;
+use relax::relation;
 use relax::relation::{Relation, Endorelation, RelationVec};
 
 const ALPHABET: [char; 26] = [
@@ -190,44 +191,44 @@ fn new_endorelation() {
 	let top = RelationVec::from_predicate(&n8, |(&x, &y)| x >= y);
 	let bot = RelationVec::from_predicate(&n8, |(&x, &y)| x <= y);
 
-	assert_eq!(
-		RelationVec::union(
+	assert!(relation::eq(
+		&RelationVec::union(
 			&top,
 			&bot,
 		),
-		RelationVec::universal(&s8)
-	);
-	assert_eq!(
-		RelationVec::intersection(
+		&RelationVec::universal(&s8)
+	));
+	assert!(relation::eq(
+		&RelationVec::intersection(
 			&RelationVec::from_predicate(&n8, |(&x, &y)| x <= y),
 			&RelationVec::from_predicate(&n8, |(&x, &y)| x >= y),
 		),
-		RelationVec::identity(&s8)
-	);
+		&RelationVec::identity(&s8)
+	));
 
-	assert_eq!(
-		RelationVec::union(
+	assert!(relation::eq(
+		&RelationVec::union(
 			&RelationVec::complement(&top),
 			&RelationVec::identity(&s8),
 		),
-		bot
-	);
-	assert_eq!(
-		RelationVec::union(
+		&bot
+	));
+	assert!(relation::eq(
+		&RelationVec::union(
 			&RelationVec::complement(&bot),
 			&RelationVec::identity(&s8),
 		),
-		top
-	);
+		&top
+	));
 
-	assert_eq!(
-		RelationVec::converse(&top),
-		bot,
-	);
-	assert_eq!(
-		RelationVec::converse(&bot),
-		top,
-	);
+	assert!(relation::eq(
+		&RelationVec::converse(&top),
+		&bot,
+	));
+	assert!(relation::eq(
+		&RelationVec::converse(&bot),
+		&top,
+	));
 }
 
 pub fn union<R, S, T>(a: &R, b: &S, c: &T)
@@ -242,18 +243,18 @@ where R: Endorelation + std::fmt::Debug,
 	let absorbing = &R::universal(r.get_domain().0);
 
 	// union: neutral element
-	assert_eq!(R::union(r, neutral), *r);
+	assert!(relation::eq(&R::union(r, neutral), r));
 	// union: absorbing element
-	assert_eq!(R::union(r, absorbing), *absorbing);
+	assert!(relation::eq(&R::union(r, absorbing), absorbing));
 	// union: idempotence
-	assert_eq!(R::union(r, r), *r);
+	assert!(relation::eq(&R::union(r, r), r));
 	// union: associativity
-	assert_eq!(
-		R::union(a, &R::union(b, c)),
-		R::union(&R::union(a, b), c),
-	);
+	assert!(relation::eq(
+		&R::union(a, &R::union(b, c)),
+		&R::union(&R::union(a, b), c),
+	));
 	// union: commutativity
-	assert_eq!(R::union(a, b), R::union(b, a));
+	assert!(relation::eq(&R::union(a, b), &R::union(b, a)));
 }
 
 pub fn intersection<R, S, T>(a: &R, b: &S, c: &T)
@@ -268,18 +269,18 @@ where R: Endorelation + std::fmt::Debug,
 	let absorbing = &R::empty(r.get_domain().0);
 
 	// intersection: neutral element
-	assert_eq!(R::intersection(r, neutral), *r);
+	assert!(relation::eq(&R::intersection(r, neutral), r));
 	// intersection: absorbing element
-	assert_eq!(R::intersection(r, absorbing), *absorbing);
+	assert!(relation::eq(&R::intersection(r, absorbing), absorbing));
 	// intersection: idempotence
-	assert_eq!(R::intersection(r, r), *r);
+	assert!(relation::eq(&R::intersection(r, r), r));
 	// intersection: associativity
-	assert_eq!(
-		R::intersection(a, &R::intersection(b, c)),
-		R::intersection(&R::intersection(a, b), c)
-	);
+	assert!(relation::eq(
+		&R::intersection(a, &R::intersection(b, c)),
+		&R::intersection(&R::intersection(a, b), c)
+	));
 	// intersection: commutativity
-	assert_eq!(R::intersection(a, b), R::intersection(b, a));
+	assert!(relation::eq(&R::intersection(a, b), &R::intersection(b, a)));
 }
 
 pub fn distributivity_union_intersection<R, S, T>(a: &R, b: &S, c: &T)
@@ -288,28 +289,28 @@ where R: Endorelation + std::fmt::Debug,
       T: Endorelation + std::fmt::Debug,
 {
 	// left distributivity (union, intersection)
-	assert_eq!(
-		R::intersection(a, &R::union(b, c)),
-		R::union(&R::intersection(a, b), &R::intersection(a, c)),
-	);
+	assert!(relation::eq(
+		&R::intersection(a, &R::union(b, c)),
+		&R::union(&R::intersection(a, b), &R::intersection(a, c)),
+	));
 	// right distributivity (union, intersection)
-	assert_eq!(
-		R::intersection(&R::union(a, b), c),
-		R::union(&R::intersection(a, c), &R::intersection(b, c)),
-	);
+	assert!(relation::eq(
+		&R::intersection(&R::union(a, b), c),
+		&R::union(&R::intersection(a, c), &R::intersection(b, c)),
+	));
 }
 
 pub fn de_morgan<R>(a: &R, b: &R)
 where R: Relation + std::fmt::Debug
 {
-	assert_eq!(
-		R::complement(&R::union(a, b)),
-		R::intersection(&R::complement(a), &R::complement(b)),
-	);
-	assert_eq!(
-		R::complement(&R::intersection(a, b)),
-		R::union(&R::complement(a), &R::complement(b)),
-	);
+	assert!(relation::eq(
+		&R::complement(&R::union(a, b)),
+		&R::intersection(&R::complement(a), &R::complement(b)),
+	));
+	assert!(relation::eq(
+		&R::complement(&R::intersection(a, b)),
+		&R::union(&R::complement(a), &R::complement(b)),
+	));
 }
 
 #[test]
@@ -327,12 +328,12 @@ fn relation_property_test() {
 	de_morgan(&div, &le);
 
 	let lt = RelationVec::from_predicate(&n8, |(&x, &y)| x < y);
-	assert_eq!(
-		RelationVec::complement(&ge),
-		lt
-	);
-	assert_eq!(
-		RelationVec::intersection(&RelationVec::identity(&s8), &RelationVec::universal(&s8)),
-		RelationVec::union(&RelationVec::identity(&s8), &RelationVec::empty(&s8))
-	);
+	assert!(relation::eq(
+		&RelationVec::complement(&ge),
+		&lt
+	));
+	assert!(relation::eq(
+		&RelationVec::intersection(&RelationVec::identity(&s8), &RelationVec::universal(&s8)),
+		&RelationVec::union(&RelationVec::identity(&s8), &RelationVec::empty(&s8))
+	));
 }

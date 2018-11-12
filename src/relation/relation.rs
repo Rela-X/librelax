@@ -157,7 +157,7 @@ pub trait Relation : Clone {
 	}
 }
 
-fn eq<P: Relation, Q: Relation>(p: &P, q: &Q) -> bool {
+pub fn eq<P: Relation, Q: Relation>(p: &P, q: &Q) -> bool {
 	if p.get_domain() != q.get_domain() { return false; }
 	for ix in p.ixs() {
 		for iy in p.iys() {
@@ -187,10 +187,6 @@ impl<'a, R: 'a + Relation> Relation for Complement<'a, R> {
 	}
 }
 
-impl<'a, R: Relation, T: Relation> PartialEq<R> for Complement<'a, T> {
-	fn eq(&self, other: &R) -> bool { eq(self, other) }
-}
-
 #[derive(Clone, Debug)]
 pub struct Concatenation<'a, P: 'a + Relation, Q: 'a + Relation> {
 	p: LCow<'a, P>,
@@ -212,10 +208,6 @@ impl<'a, P: 'a + Relation, Q: 'a + Relation> Relation for Concatenation<'a, P, Q
 	}
 }
 
-impl<'a, R: Relation, S: Relation, T: Relation> PartialEq<R> for Concatenation<'a, S, T> {
-	fn eq(&self, other: &R) -> bool { eq(self, other) }
-}
-
 #[derive(Clone, Debug)]
 pub struct Converse<'a, R: 'a + Relation> {
 	r: LCow<'a, R>,
@@ -234,10 +226,6 @@ impl<'a, R: 'a + Relation> Relation for Converse<'a, R> {
 	fn eval_at(&self, ix: usize, iy: usize) -> bool {
 		self.r.eval_at(iy, ix)
 	}
-}
-
-impl<'a, R: Relation, T: Relation> PartialEq<R> for Converse<'a, T> {
-	fn eq(&self, other: &R) -> bool { eq(self, other) }
 }
 
 #[derive(Clone, Debug)]
@@ -261,10 +249,6 @@ impl<'a, P: 'a + Relation, Q: 'a + Relation> Relation for Intersection<'a, P, Q>
 	}
 }
 
-impl<'a, R: Relation, S: Relation, T: Relation> PartialEq<R> for Intersection<'a, S, T> {
-	fn eq(&self, other: &R) -> bool { eq(self, other) }
-}
-
 #[derive(Clone, Debug)]
 pub struct Union<'a, P: 'a + Relation, Q: 'a + Relation> {
 	p: LCow<'a, P>,
@@ -284,10 +268,6 @@ impl<'a, P: 'a + Relation, Q: 'a + Relation> Relation for Union<'a, P, Q> {
 	fn eval_at(&self, ix: usize, iy: usize) -> bool {
 		self.p.eval_at(ix, iy) || self.q.eval_at(ix, iy)
 	}
-}
-
-impl<'a, R: Relation, S: Relation, T: Relation> PartialEq<R> for Union<'a, S, T> {
-	fn eq(&self, other: &R) -> bool { eq(self, other) }
 }
 
 mod tests {

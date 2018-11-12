@@ -152,7 +152,7 @@ impl<'a, P: 'a + Relation, Q: 'a + Relation> Endorelation for Intersection<'a, P
 impl<'a, P: 'a + Relation, Q: 'a + Relation> Endorelation for Union<'a, P, Q> {}
 
 /// The [`Empty`] `Relation` E where xEy does not hold for any (x,y) ∈ X × Y
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug)]
 pub struct Empty<'a> {
 	set: &'a Set,
 }
@@ -168,7 +168,7 @@ impl<'a> Relation for Empty<'a> {
 impl<'a> Endorelation for Empty<'a> {}
 
 /// The [`Identity`] `Relation` I where xIy iff x = y
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug)]
 pub struct Identity<'a> {
 	set: &'a Set,
 }
@@ -184,7 +184,7 @@ impl<'a> Relation for Identity<'a> {
 impl<'a> Endorelation for Identity<'a> {}
 
 /// The [`Universal`] `Relation` U where xUy holds for all (x,y) ∈ X × Y
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug)]
 pub struct Universal<'a> {
 	set: &'a Set,
 }

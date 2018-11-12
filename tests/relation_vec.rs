@@ -1,6 +1,6 @@
 extern crate relax;
 
-use relax::{Set, SetElement};
+use relax::Set;
 use relax::relation::{Relation, Endorelation, RelationVec};
 
 const ALPHABET: [char; 26] = [

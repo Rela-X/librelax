@@ -11,15 +11,15 @@ use relation::RelationVec;
 /// # Examples
 ///
 /// ```
-/// let s: relax::Set = (1..3).map(|i| i.to_string()).collect();
-/// let r: relax::relation::RelationVec = relax::random::generate_random((s.clone(), s.clone()), 0.5);
+/// let s: relax::Set = (1..3).collect();
+/// let r: relax::RelationVec = relax::random::generate_random((s.clone(), s.clone()), 0.5);
 /// ```
 ///
 /// `p` = 0 creates the empty `Relation`.
 ///
 /// ```
 /// use relax::Endorelation;
-/// let s: relax::Set = (1..3).map(|i| i.to_string()).collect();
+/// let s: relax::Set = (1..3).collect();
 /// let r: relax::RelationVec = relax::random::generate_random((s.clone(), s.clone()), 0.0);
 /// assert!(relax::relation::eq(&r, &relax::RelationVec::empty(&s)));
 /// ```
@@ -28,7 +28,7 @@ use relation::RelationVec;
 ///
 /// ```
 /// use relax::Endorelation;
-/// let s: relax::Set = (1..3).map(|i| i.to_string()).collect();
+/// let s: relax::Set = (1..3).collect();
 /// let r: relax::RelationVec = relax::random::generate_random((s.clone(), s.clone()), 1.0);
 /// assert!(relax::relation::eq(&r, &relax::RelationVec::universal(&s)));
 /// ```

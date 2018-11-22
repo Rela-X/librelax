@@ -76,6 +76,12 @@ impl From<String> for SetElement {
 	}
 }
 
+impl From<i32> for SetElement {
+	fn from(i: i32) -> SetElement {
+		SetElement::Str(i.to_string())
+	}
+}
+
 // Why is this not covered by From<&'a ToString> ??
 impl<'a> From<&'a char> for SetElement {
 	fn from(c: &'a char) -> SetElement {

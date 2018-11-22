@@ -10,12 +10,14 @@ use relation::RelationVec;
 ///
 /// # Examples
 ///
+/// Create a `Relation` with 50% density.
+///
 /// ```
 /// let s: relax::Set = (1..3).collect();
 /// let r: relax::RelationVec = relax::random::generate_random((s.clone(), s.clone()), 0.5);
 /// ```
 ///
-/// `p` = 0 creates the empty `Relation`.
+/// `p = 0` creates the empty `Relation`.
 ///
 /// ```
 /// use relax::Endorelation;
@@ -24,7 +26,7 @@ use relation::RelationVec;
 /// assert!(relax::relation::eq(&r, &relax::RelationVec::empty(&s)));
 /// ```
 ///
-/// `p` = 1 creates the universal `Relation`.
+/// `p = 1` creates the universal `Relation`.
 ///
 /// ```
 /// use relax::Endorelation;

@@ -5,6 +5,16 @@ use std::string::ToString;
 use set::Set;
 use relation::{Relation, Endorelation};
 
+/// A binary `Relation`, represented as a `std::vec::Vec` of `bool`ean values.
+/// Values are storen row-wise, as shown in the following example, to form an
+/// incidence matrix:
+///
+/// ```
+/// let table = vec![
+/// 	true,  false, // (0,0), (0,1),
+/// 	false, true,  // (1,0), (1,1),
+/// ];
+/// ```
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct RelationVec {
 //	homogeneous: Option<bool>,
@@ -13,12 +23,14 @@ pub struct RelationVec {
 }
 
 impl RelationVec {
+	/// Create a new [`RelationVec`] from the given domain and and incidence matrix.
 	pub fn new(domain: (Set, Set), table: Vec<bool>) -> Self {
 		RelationVec {
 			domain: domain,
 			table: table,
 		}
 	}
+	/// Create a new [`RelationVec`] from the given `Relation`.
 	pub fn from_relation<R: Relation>(r: &R) -> Self {
 		let d = r.get_domain();
 		RelationVec {
@@ -42,6 +54,7 @@ impl RelationVec {
 				.collect(),
 		}
 	}
+	/// Calculate the position of (ix, iy) in the `RelationVec`'s `table`.
 	fn get_table_index(&self, ix: usize, iy: usize) -> usize {
 		ix * self.domain.0.cardinality() + iy
 	}

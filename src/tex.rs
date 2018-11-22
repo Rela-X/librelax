@@ -12,7 +12,10 @@ pub trait ToTex<R: Relation> {
 // Implement ToTex for every Relation
 impl<R: Relation> ToTex<R> for R {
 	/// Create a wrapper-object that prints the [`Relation`]
-	/// in LaTeX format using the array-Environment.
+	/// in LaTeX format.
+	/// The `Relation` is formatted using the `array`-environment
+	/// with `\true` and `\false` cells to allow for customized
+	/// display of boolean values within the LaTeX document.
 	///
 	/// # Examples
 	///
@@ -20,6 +23,14 @@ impl<R: Relation> ToTex<R> for R {
 	/// use relax::tex::ToTex;
 	///
 	/// let r = relax::RelationVec::from_predicate(&(1..5).collect::<Vec<_>>(), |(x, y)| x < y);
+	/// // write the following output to stdout:
+	/// //     \begin{array}{c|cccc}
+	/// //       & 1      & 2      & 3      & 4 \hline \\
+	/// //     1 & \false & \true  & \true  & \true  \\
+	/// //     2 & \false & \false & \true  & \true  \\
+	/// //     3 & \false & \false & \false & \true  \\
+	/// //     4 & \false & \false & \false & \false
+	/// //     \end{array}
 	/// println!("{}", r.to_tex());
 	/// ```
 	fn to_tex(&self) -> TeXWrapper<R> {

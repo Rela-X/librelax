@@ -1,3 +1,8 @@
+//! A homogeneous, binary [`Relation`].
+//!
+//! This module contains the `Endorelation` type aswell as types to represent
+//! empty-, the universal- and the identity-relations.
+
 use std;
 
 use set::Set;
@@ -27,14 +32,22 @@ macro_rules! cross_uniq {
 
 
 pub trait Endorelation : Relation {
-	fn is_reflexive(&self) -> bool { /* xRx */
+	/// Return `true` if the relation is reflexive.
+	/// A relation is reflexive iff `∀x ∈ X: xRx`
+	fn is_reflexive(&self) -> bool {
 		if !self.is_homogeneous() { return false; }
 		self.ixs().all(|i| self.eval_at(i, i))
 	}
-	fn is_irreflexive(&self) -> bool { /* aka strict */
+	/// Return `true` if the relation is irreflexive.
+	/// A relation is irreflexive iff `∀x ∈ X: not xRx`
+	///
+	/// aka strict
+	fn is_irreflexive(&self) -> bool {
 		if !self.is_homogeneous() { return false; }
 		self.ixs().all(|i| !self.eval_at(i, i))
 	}
+	/// Return `true` if the relation is antisymmetric.
+	/// A relation is antisymmetric iff `∀x,y ∈ X: xRy ∧ yRx ⇒ x = y`
 	fn is_antisymmetric(&self) -> bool {
 		if !self.is_homogeneous() { return false; }
 		cross_uniq!(self.ixs(), self.iys()).all(
@@ -52,6 +65,8 @@ pub trait Endorelation : Relation {
 		return true;
 		*/
 	}
+	/// Return `true` if the relation is transitive.
+	/// A relation is transitive iff `∀x,y,z ∈ X: xRy ∧ yRz ⇒ xRz`
 	fn is_transitive(&self) -> bool {
 		if !self.is_homogeneous() { return false; }
 		cross!(self.ixs(), self.iys())
@@ -78,19 +93,33 @@ pub trait Endorelation : Relation {
 		*/
 	}
 
-	fn is_symmetric(&self) -> bool { /* xRy <=> yRx */
+	/// Return `true` if the relation is symmetric.
+	/// A relation is symmetric iff `∀x,y ∈ X: xRy ⇒ yRx`
+	fn is_symmetric(&self) -> bool {
 		if !self.is_homogeneous() { return false; }
 		cross_uniq!(self.ixs(), self.iys()).all(
 			|(ix, iy)| self.eval_at(ix, iy) == self.eval_at(iy, ix)
 		)
 	}
+	/// Return `true` if the relation is asymmetric.
+	/// A relation is asymmetric if the relation is irreflexive and antisymmetric.
 	fn is_asymmetric(&self) -> bool { self.is_irreflexive() && self.is_antisymmetric() }
 
+	/// Return `true` if the relation is a pre-order.
+	/// A relation is a pre-order if the relation is reflexive and transitive.
 	fn is_preorder(&self) -> bool { self.is_reflexive() && self.is_transitive() }
+	/// Return `true` if the relation is a partial order.
+	/// A relation is a partial order if the relation is a pre-order and antisymmetric.
 	fn is_partial_order(&self) -> bool { self.is_preorder() && self.is_antisymmetric() }
+	/// Return `true` if the relation is equivalent.
+	/// A relation is equivalent if the relation is a pre-order and symmetric.
 	fn is_equivalent(&self) -> bool { self.is_preorder() && self.is_symmetric() }
 
-	fn is_difunctional(&self) -> bool { /* aka regular: xRy & zRy & zRw => xRw */
+	/// Return `true` if the relation is difunctional.
+	/// A relation is difunctional iff `∀w,x,y,z ∈ X: xRy ∧ zRy ∧ zRw ⇒ xRw`
+	///
+	/// aka regular
+	fn is_difunctional(&self) -> bool {
 		if !self.is_homogeneous() { return false; }
 		for (ix, iy) in cross!(self.ixs(), self.iys()) {
 			if !self.eval_at(ix, iy) { continue; }
@@ -106,12 +135,14 @@ pub trait Endorelation : Relation {
 		return true;
 	}
 
+	/// Return `true` if the relation is a lattice.
 	fn is_lattice(&self) -> bool {
 		if !self.is_homogeneous() { return false; } // TODO? Error
 		if !self.is_partial_order() { return false; } // TODO? Error
 		// TODO
 		false
 	}
+	/// Return `true` if the relation is a sublattice.
 	fn is_sublattice<T: Endorelation>(&self, other: &T) -> bool {
 		// TODO
 		false
@@ -127,12 +158,12 @@ pub trait Endorelation : Relation {
 		Identity { set: set }
 	}
 
-	/// Reflexive closure: union(r, id)
+	/// Reflexive closure: `union(r, id)`
 	fn closure_reflexive<R: Endorelation>(r: &R) -> Union<R, Identity> {
 		let id = R::identity(r.get_domain().0);
 		return Union::new(r, id);
 	}
-	/// Symmetric closure: union(r, converse(r))
+	/// Symmetric closure: `union(r, converse(r))`
 	fn closure_symmetric<R: Endorelation>(r: &R) -> Union<R, Converse<R>> {
 		let conv = R::converse(r);
 		return Union::new(r, conv);
@@ -151,7 +182,7 @@ impl<'a, R: 'a + Relation> Endorelation for Converse<'a, R> {}
 impl<'a, P: 'a + Relation, Q: 'a + Relation> Endorelation for Intersection<'a, P, Q> {}
 impl<'a, P: 'a + Relation, Q: 'a + Relation> Endorelation for Union<'a, P, Q> {}
 
-/// The [`Empty`] `Relation` E where xEy does not hold for any (x,y) ∈ X × Y
+/// The [`Empty`] `Relation E` where `xEy` does not hold for any `(x,y) ∈ X × Y`
 #[derive(Clone, Debug)]
 pub struct Empty<'a> {
 	set: &'a Set,
@@ -167,7 +198,7 @@ impl<'a> Relation for Empty<'a> {
 }
 impl<'a> Endorelation for Empty<'a> {}
 
-/// The [`Identity`] `Relation` I where xIy iff x = y
+/// The [`Identity`] `Relation I` where `xIy ⇔ x = y`
 #[derive(Clone, Debug)]
 pub struct Identity<'a> {
 	set: &'a Set,
@@ -183,7 +214,7 @@ impl<'a> Relation for Identity<'a> {
 }
 impl<'a> Endorelation for Identity<'a> {}
 
-/// The [`Universal`] `Relation` U where xUy holds for all (x,y) ∈ X × Y
+/// The [`Universal`] `Relation U` where `xUy` holds for all `(x,y) ∈ X × Y`
 #[derive(Clone, Debug)]
 pub struct Universal<'a> {
 	set: &'a Set,

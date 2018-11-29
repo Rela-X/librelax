@@ -1,3 +1,8 @@
+//! A binary [`Relation`]
+//!
+//! This module contains the `Relation` type aswell as types for
+//! various operations such as Union and Intersection.
+
 use std;
 use cow::LCow;
 

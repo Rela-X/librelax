@@ -1,3 +1,5 @@
+//! A binary `Relation`, represented as a `std::vec::Vec` of `bool`ean values.
+
 use std::vec::Vec;
 use std::fmt;
 use std::string::ToString;

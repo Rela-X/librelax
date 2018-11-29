@@ -148,12 +148,15 @@ pub trait Endorelation : Relation {
 		false
 	}
 
+	/// The empty `Relation E` where `xEy` does not hold for any `(x,y) ∈ X × Y`
 	fn empty(set: &Set) -> Empty {
 		Empty { set: set }
 	}
+	/// The universal `Relation U` where `xUy` holds for all `(x,y) ∈ X × Y`
 	fn universal(set: &Set) -> Universal {
 		Universal { set: set }
 	}
+	/// The identity `Relation I` where `xIy ⇔ x = y`
 	fn identity(set: &Set) -> Identity {
 		Identity { set: set }
 	}
@@ -182,7 +185,7 @@ impl<'a, R: 'a + Relation> Endorelation for Converse<'a, R> {}
 impl<'a, P: 'a + Relation, Q: 'a + Relation> Endorelation for Intersection<'a, P, Q> {}
 impl<'a, P: 'a + Relation, Q: 'a + Relation> Endorelation for Union<'a, P, Q> {}
 
-/// The [`Empty`] `Relation E` where `xEy` does not hold for any `(x,y) ∈ X × Y`
+/// The [`Empty`] `Relation`
 #[derive(Clone, Debug)]
 pub struct Empty<'a> {
 	set: &'a Set,
@@ -198,23 +201,7 @@ impl<'a> Relation for Empty<'a> {
 }
 impl<'a> Endorelation for Empty<'a> {}
 
-/// The [`Identity`] `Relation I` where `xIy ⇔ x = y`
-#[derive(Clone, Debug)]
-pub struct Identity<'a> {
-	set: &'a Set,
-}
-
-impl<'a> Relation for Identity<'a> {
-	fn get_domain(&self) -> (&Set, &Set) {
-		(&self.set, &self.set)
-	}
-	fn eval_at(&self, ix: usize, iy: usize) -> bool {
-		ix == iy
-	}
-}
-impl<'a> Endorelation for Identity<'a> {}
-
-/// The [`Universal`] `Relation U` where `xUy` holds for all `(x,y) ∈ X × Y`
+/// The [`Universal`] `Relation`
 #[derive(Clone, Debug)]
 pub struct Universal<'a> {
 	set: &'a Set,
@@ -229,6 +216,22 @@ impl<'a> Relation for Universal<'a> {
 	}
 }
 impl<'a> Endorelation for Universal<'a> {}
+
+/// The [`Identity`] `Relation`
+#[derive(Clone, Debug)]
+pub struct Identity<'a> {
+	set: &'a Set,
+}
+
+impl<'a> Relation for Identity<'a> {
+	fn get_domain(&self) -> (&Set, &Set) {
+		(&self.set, &self.set)
+	}
+	fn eval_at(&self, ix: usize, iy: usize) -> bool {
+		ix == iy
+	}
+}
+impl<'a> Endorelation for Identity<'a> {}
 
 mod tests {
 	use super::*;

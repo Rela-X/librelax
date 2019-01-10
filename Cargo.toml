@@ -2,6 +2,7 @@
 name = "relax"
 version = "0.1.0"
 authors = ["Wilke Schwiedop <wilke.schwiedop.2010w@informatik.h-brs.de>"]
+edition = "2018"
 
 [dependencies]
 rand = "^0.5"

@@ -5,7 +5,7 @@ use std::ops::Deref;
 /// It is required to add blanket implementations for all types used in Relax.
 /// see E0210 and Rust-RFC 1023
 #[derive(Clone, Debug)]
-pub struct LCow<'a, T: 'a + Clone>(Cow<'a, T>);
+pub struct LCow<'a, T: Clone>(Cow<'a, T>);
 
 impl<'a, T: Clone> Deref for LCow<'a, T> {
 	type Target = Cow<'a, T>;

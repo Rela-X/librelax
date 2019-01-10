@@ -179,11 +179,11 @@ pub trait Endorelation : Relation {
 	//fn closure_biorder<R: Endorelation>(r: &R) -> R {}
 }
 
-impl<'a, R: 'a + Relation> Endorelation for Complement<'a, R> {}
-impl<'a, P: 'a + Relation, Q: 'a + Relation> Endorelation for Concatenation<'a, P, Q> {}
-impl<'a, R: 'a + Relation> Endorelation for Converse<'a, R> {}
-impl<'a, P: 'a + Relation, Q: 'a + Relation> Endorelation for Intersection<'a, P, Q> {}
-impl<'a, P: 'a + Relation, Q: 'a + Relation> Endorelation for Union<'a, P, Q> {}
+impl<'a, R: Relation> Endorelation for Complement<'a, R> {}
+impl<'a, P: Relation, Q: Relation> Endorelation for Concatenation<'a, P, Q> {}
+impl<'a, R: Relation> Endorelation for Converse<'a, R> {}
+impl<'a, P: Relation, Q: Relation> Endorelation for Intersection<'a, P, Q> {}
+impl<'a, P: Relation, Q: Relation> Endorelation for Union<'a, P, Q> {}
 
 /// The [`Empty`] `Relation`
 #[derive(Clone, Debug)]

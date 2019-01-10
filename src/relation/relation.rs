@@ -228,17 +228,17 @@ pub fn eq<P: Relation, Q: Relation>(p: &P, q: &Q) -> bool {
 }
 
 #[derive(Clone, Debug)]
-pub struct Complement<'a, R: 'a + Relation> {
+pub struct Complement<'a, R: Relation> {
 	r: LCow<'a, R>,
 }
 
-impl<'a, R: 'a + Relation> Complement<'a, R> {
+impl<'a, R: Relation> Complement<'a, R> {
 	fn new<T: Into<LCow<'a, R>>>(t: T) -> Self {
 		Complement { r: t.into() }
 	}
 }
 
-impl<'a, R: 'a + Relation> Relation for Complement<'a, R> {
+impl<'a, R: Relation> Relation for Complement<'a, R> {
 	fn get_domain(&self) -> (&Set, &Set) {
 		self.r.get_domain()
 	}
@@ -248,18 +248,18 @@ impl<'a, R: 'a + Relation> Relation for Complement<'a, R> {
 }
 
 #[derive(Clone, Debug)]
-pub struct Concatenation<'a, P: 'a + Relation, Q: 'a + Relation> {
+pub struct Concatenation<'a, P: Relation, Q: Relation> {
 	p: LCow<'a, P>,
 	q: LCow<'a, Q>,
 }
 
-impl<'a, P: 'a + Relation, Q: 'a + Relation> Concatenation<'a, P, Q> {
+impl<'a, P: Relation, Q: Relation> Concatenation<'a, P, Q> {
 	pub fn new<S: Into<LCow<'a, P>>, T: Into<LCow<'a, Q>>>(s: S, t: T) -> Self {
 		Concatenation { p: s.into(), q: t.into() }
 	}
 }
 
-impl<'a, P: 'a + Relation, Q: 'a + Relation> Relation for Concatenation<'a, P, Q> {
+impl<'a, P: Relation, Q: Relation> Relation for Concatenation<'a, P, Q> {
 	fn get_domain(&self) -> (&Set, &Set) {
 		self.p.get_domain()
 	}
@@ -269,17 +269,17 @@ impl<'a, P: 'a + Relation, Q: 'a + Relation> Relation for Concatenation<'a, P, Q
 }
 
 #[derive(Clone, Debug)]
-pub struct Converse<'a, R: 'a + Relation> {
+pub struct Converse<'a, R: Relation> {
 	r: LCow<'a, R>,
 }
 
-impl<'a, R: 'a + Relation> Converse<'a, R> {
+impl<'a, R: Relation> Converse<'a, R> {
 	fn new<T: Into<LCow<'a, R>>>(t: T) -> Self {
 		Converse { r: t.into() }
 	}
 }
 
-impl<'a, R: 'a + Relation> Relation for Converse<'a, R> {
+impl<'a, R: Relation> Relation for Converse<'a, R> {
 	fn get_domain(&self) -> (&Set, &Set) {
 		self.r.get_domain()
 	}
@@ -289,18 +289,18 @@ impl<'a, R: 'a + Relation> Relation for Converse<'a, R> {
 }
 
 #[derive(Clone, Debug)]
-pub struct Intersection<'a, P: 'a + Relation, Q: 'a + Relation> {
+pub struct Intersection<'a, P: Relation, Q: Relation> {
 	p: LCow<'a, P>,
 	q: LCow<'a, Q>,
 }
 
-impl<'a, P: 'a + Relation, Q: 'a + Relation> Intersection<'a, P, Q> {
+impl<'a, P: Relation, Q: Relation> Intersection<'a, P, Q> {
 	pub fn new<S: Into<LCow<'a, P>>, T: Into<LCow<'a, Q>>>(s: S, t: T) -> Self {
 		Intersection { p: s.into(), q: t.into() }
 	}
 }
 
-impl<'a, P: 'a + Relation, Q: 'a + Relation> Relation for Intersection<'a, P, Q> {
+impl<'a, P: Relation, Q: Relation> Relation for Intersection<'a, P, Q> {
 	fn get_domain(&self) -> (&Set, &Set) {
 		self.p.get_domain()
 	}
@@ -310,18 +310,18 @@ impl<'a, P: 'a + Relation, Q: 'a + Relation> Relation for Intersection<'a, P, Q>
 }
 
 #[derive(Clone, Debug)]
-pub struct Union<'a, P: 'a + Relation, Q: 'a + Relation> {
+pub struct Union<'a, P: Relation, Q: Relation> {
 	p: LCow<'a, P>,
 	q: LCow<'a, Q>,
 }
 
-impl<'a, P: 'a + Relation, Q: 'a + Relation> Union<'a, P, Q> {
+impl<'a, P: Relation, Q: Relation> Union<'a, P, Q> {
 	pub fn new<S: Into<LCow<'a, P>>, T: Into<LCow<'a, Q>>>(s: S, t: T) -> Self {
 		Union { p: s.into(), q: t.into() }
 	}
 }
 
-impl<'a, P: 'a + Relation, Q: 'a + Relation> Relation for Union<'a, P, Q> {
+impl<'a, P: Relation, Q: Relation> Relation for Union<'a, P, Q> {
 	fn get_domain(&self) -> (&Set, &Set) {
 		self.p.get_domain()
 	}

@@ -5,9 +5,9 @@
 
 use std;
 
-use set::Set;
-use relation::Relation;
-use relation::relation::{Complement, Concatenation, Converse, Intersection, Union};
+use crate::set::Set;
+use crate::relation::Relation;
+use crate::relation::relation::{Complement, Concatenation, Converse, Intersection, Union};
 
 /// cross!(1..4, a..d) = (
 /// 	(1,a), (1,b), (1,c),

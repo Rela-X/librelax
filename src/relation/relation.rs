@@ -4,9 +4,9 @@
 //! various operations such as Union and Intersection.
 
 use std;
-use cow::LCow;
+use crate::cow::LCow;
 
-use set::{Set, SetElement};
+use crate::set::{Set, SetElement};
 
 pub trait Relation : Clone {
 	fn get_domain(&self) -> (&Set, &Set);

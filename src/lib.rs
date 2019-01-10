@@ -6,8 +6,8 @@ pub mod tex;
 pub mod random;
 mod cow;
 
-pub use relation::Relation;
-pub use relation::Endorelation;
-pub use relation::RelationVec;
-pub use set::Set;
-pub use set::SetElement;
+pub use crate::relation::Relation;
+pub use crate::relation::Endorelation;
+pub use crate::relation::RelationVec;
+pub use crate::set::Set;
+pub use crate::set::SetElement;

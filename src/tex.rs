@@ -1,7 +1,7 @@
 use std::fmt;
 use std::iter;
 
-use Relation;
+use crate::relation::relation::Relation;
 
 pub struct TeXWrapper<'a, R: 'a + Relation>(&'a R);
 

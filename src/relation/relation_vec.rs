@@ -4,8 +4,8 @@ use std::vec::Vec;
 use std::fmt;
 use std::string::ToString;
 
-use set::Set;
-use relation::{Relation, Endorelation};
+use crate::set::Set;
+use crate::relation::{Relation, Endorelation};
 
 /// A binary `Relation`, represented as a `std::vec::Vec` of `bool`ean values.
 /// Values are storen row-wise, as shown in the following example, to form an
@@ -84,7 +84,7 @@ impl fmt::Display for RelationVec {
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use Set;
+	use crate::set::Set;
 
 	const ALPHABET: [char; 26] = [
 		'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',

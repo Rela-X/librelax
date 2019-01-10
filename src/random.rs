@@ -1,9 +1,7 @@
-extern crate rand;
+use rand::distributions::{Bernoulli, Distribution};
 
-use random::rand::distributions::{Bernoulli, Distribution};
-
-use Set;
-use relation::RelationVec;
+use crate::set::Set;
+use crate::relation::RelationVec;
 
 /// Generate a random [`Relation`] for the given domain.
 /// `p` specifies the density of the created incidence matrix.

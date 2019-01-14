@@ -174,7 +174,7 @@ pub trait Relation : Clone {
 	/// The complement of a relation.
 	///
 	/// `xSy ⇔ not xRy`
-	fn complement<R>(r: &R) -> Complement<R>
+	fn complement<R>(r: &R) -> Complement<'_, R>
 	where R: Relation,
 	{
 		Complement::new(r)
@@ -191,7 +191,7 @@ pub trait Relation : Clone {
 	/// The converse of a relation.
 	///
 	/// `R^T = { (y, x) | (x, y) ∈ R }`
-	fn converse<R>(r: &R) -> Converse<R>
+	fn converse<R>(r: &R) -> Converse<'_, R>
 	where R: Relation,
 	{
 		Converse::new(r)
@@ -238,7 +238,7 @@ impl<'a, R: Relation> Complement<'a, R> {
 	}
 }
 
-impl<'a, R: Relation> Relation for Complement<'a, R> {
+impl<R: Relation> Relation for Complement<'_, R> {
 	fn get_domain(&self) -> (&Set, &Set) {
 		self.r.get_domain()
 	}
@@ -259,7 +259,7 @@ impl<'a, P: Relation, Q: Relation> Concatenation<'a, P, Q> {
 	}
 }
 
-impl<'a, P: Relation, Q: Relation> Relation for Concatenation<'a, P, Q> {
+impl<P: Relation, Q: Relation> Relation for Concatenation<'_, P, Q> {
 	fn get_domain(&self) -> (&Set, &Set) {
 		self.p.get_domain()
 	}
@@ -279,7 +279,7 @@ impl<'a, R: Relation> Converse<'a, R> {
 	}
 }
 
-impl<'a, R: Relation> Relation for Converse<'a, R> {
+impl<R: Relation> Relation for Converse<'_, R> {
 	fn get_domain(&self) -> (&Set, &Set) {
 		self.r.get_domain()
 	}
@@ -300,7 +300,7 @@ impl<'a, P: Relation, Q: Relation> Intersection<'a, P, Q> {
 	}
 }
 
-impl<'a, P: Relation, Q: Relation> Relation for Intersection<'a, P, Q> {
+impl<P: Relation, Q: Relation> Relation for Intersection<'_, P, Q> {
 	fn get_domain(&self) -> (&Set, &Set) {
 		self.p.get_domain()
 	}
@@ -321,7 +321,7 @@ impl<'a, P: Relation, Q: Relation> Union<'a, P, Q> {
 	}
 }
 
-impl<'a, P: Relation, Q: Relation> Relation for Union<'a, P, Q> {
+impl<P: Relation, Q: Relation> Relation for Union<'_, P, Q> {
 	fn get_domain(&self) -> (&Set, &Set) {
 		self.p.get_domain()
 	}

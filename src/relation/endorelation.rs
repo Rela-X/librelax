@@ -149,25 +149,25 @@ pub trait Endorelation : Relation {
 	}
 
 	/// The empty `Relation E` where `xEy` does not hold for any `(x,y) ∈ X × Y`
-	fn empty(set: &Set) -> Empty {
+	fn empty(set: &Set) -> Empty<'_> {
 		Empty { set: set }
 	}
 	/// The universal `Relation U` where `xUy` holds for all `(x,y) ∈ X × Y`
-	fn universal(set: &Set) -> Universal {
+	fn universal(set: &Set) -> Universal<'_> {
 		Universal { set: set }
 	}
 	/// The identity `Relation I` where `xIy ⇔ x = y`
-	fn identity(set: &Set) -> Identity {
+	fn identity(set: &Set) -> Identity<'_> {
 		Identity { set: set }
 	}
 
 	/// Reflexive closure: `union(r, id)`
-	fn closure_reflexive<R: Endorelation>(r: &R) -> Union<R, Identity> {
+	fn closure_reflexive<R: Endorelation>(r: &R) -> Union<'_, R, Identity<'_>> {
 		let id = R::identity(r.get_domain().0);
 		return Union::new(r, id);
 	}
 	/// Symmetric closure: `union(r, converse(r))`
-	fn closure_symmetric<R: Endorelation>(r: &R) -> Union<R, Converse<R>> {
+	fn closure_symmetric<R: Endorelation>(r: &R) -> Union<'_, R, Converse<'_, R>> {
 		let conv = R::converse(r);
 		return Union::new(r, conv);
 	}
@@ -179,11 +179,11 @@ pub trait Endorelation : Relation {
 	//fn closure_biorder<R: Endorelation>(r: &R) -> R {}
 }
 
-impl<'a, R: Relation> Endorelation for Complement<'a, R> {}
-impl<'a, P: Relation, Q: Relation> Endorelation for Concatenation<'a, P, Q> {}
-impl<'a, R: Relation> Endorelation for Converse<'a, R> {}
-impl<'a, P: Relation, Q: Relation> Endorelation for Intersection<'a, P, Q> {}
-impl<'a, P: Relation, Q: Relation> Endorelation for Union<'a, P, Q> {}
+impl<R: Relation> Endorelation for Complement<'_, R> {}
+impl<P: Relation, Q: Relation> Endorelation for Concatenation<'_, P, Q> {}
+impl<R: Relation> Endorelation for Converse<'_, R> {}
+impl<P: Relation, Q: Relation> Endorelation for Intersection<'_, P, Q> {}
+impl<P: Relation, Q: Relation> Endorelation for Union<'_, P, Q> {}
 
 /// The [`Empty`] `Relation`
 #[derive(Clone, Debug)]
@@ -191,7 +191,7 @@ pub struct Empty<'a> {
 	set: &'a Set,
 }
 
-impl<'a> Relation for Empty<'a> {
+impl Relation for Empty<'_> {
 	fn get_domain(&self) -> (&Set, &Set) {
 		(&self.set, &self.set)
 	}
@@ -199,7 +199,7 @@ impl<'a> Relation for Empty<'a> {
 		false
 	}
 }
-impl<'a> Endorelation for Empty<'a> {}
+impl Endorelation for Empty<'_> {}
 
 /// The [`Universal`] `Relation`
 #[derive(Clone, Debug)]
@@ -207,7 +207,7 @@ pub struct Universal<'a> {
 	set: &'a Set,
 }
 
-impl<'a> Relation for Universal<'a> {
+impl Relation for Universal<'_> {
 	fn get_domain(&self) -> (&Set, &Set) {
 		(&self.set, &self.set)
 	}
@@ -215,7 +215,7 @@ impl<'a> Relation for Universal<'a> {
 		true
 	}
 }
-impl<'a> Endorelation for Universal<'a> {}
+impl Endorelation for Universal<'_> {}
 
 /// The [`Identity`] `Relation`
 #[derive(Clone, Debug)]
@@ -223,7 +223,7 @@ pub struct Identity<'a> {
 	set: &'a Set,
 }
 
-impl<'a> Relation for Identity<'a> {
+impl Relation for Identity<'_> {
 	fn get_domain(&self) -> (&Set, &Set) {
 		(&self.set, &self.set)
 	}
@@ -231,7 +231,7 @@ impl<'a> Relation for Identity<'a> {
 		ix == iy
 	}
 }
-impl<'a> Endorelation for Identity<'a> {}
+impl Endorelation for Identity<'_> {}
 
 mod tests {
 	use super::*;

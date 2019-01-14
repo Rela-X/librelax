@@ -14,7 +14,7 @@ impl<'a, T: Clone> Deref for LCow<'a, T> {
 	}
 }
 
-impl<'a, T: Clone> From<T> for LCow<'a, T> {
+impl<T: Clone> From<T> for LCow<'_, T> {
 	fn from(t: T) -> Self {
 		LCow(Cow::Owned(t.to_owned()))
 	}

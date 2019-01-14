@@ -6,7 +6,7 @@ use crate::relation::relation::Relation;
 pub struct TeXWrapper<'a, R: Relation>(&'a R);
 
 pub trait ToTex<R: Relation> {
-	fn to_tex(&self) -> TeXWrapper<R>;
+	fn to_tex(&self) -> TeXWrapper<'_, R>;
 }
 
 // Implement ToTex for every Relation
@@ -33,12 +33,12 @@ impl<R: Relation> ToTex<R> for R {
 	/// //     \end{array}
 	/// println!("{}", r.to_tex());
 	/// ```
-	fn to_tex(&self) -> TeXWrapper<R> {
+	fn to_tex(&self) -> TeXWrapper<'_, R> {
 		TeXWrapper(self)
 	}
 }
 
-impl<'a, R: Relation> fmt::Display for TeXWrapper<'a, R> {
+impl<R: Relation> fmt::Display for TeXWrapper<'_, R> {
 	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 		let table_width = self.0.get_domain().0.cardinality();
 		write!(f, "{}", r"\begin{array}")?;

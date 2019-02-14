@@ -35,6 +35,12 @@ impl Set {
 	pub fn intersection<'a>(&'a self, other: &'a Set) -> ::std::collections::btree_set::Intersection<'a, SetElement> {
 		self.0.intersection(&other.0)
 	}
+	pub fn intersection_enumerated<'a>(&'a self, other: &'a Set) -> EnumeratedIntersection<'a> {
+		EnumeratedIntersection {
+			s: self.0.iter().enumerate().peekable(),
+			u: other.0.iter().enumerate().peekable(),
+		}
+	}
 }
 
 impl fmt::Display for Set {
@@ -65,6 +71,38 @@ impl fmt::Display for SetElement {
 			SetElement::Str(s) => write!(f, "{}", s),
 			SetElement::Set(s) => write!(f, "{}", s),
 		}
+	}
+}
+
+#[derive(Clone, Debug)]
+pub struct EnumeratedIntersection<'a> {
+	s: std::iter::Peekable<std::iter::Enumerate<std::collections::btree_set::Iter<'a, SetElement>>>,
+	u: std::iter::Peekable<std::iter::Enumerate<std::collections::btree_set::Iter<'a, SetElement>>>,
+}
+impl<'a> Iterator for EnumeratedIntersection<'a> {
+	type Item = ((usize, usize), &'a SetElement);
+	fn next(&mut self) -> Option<Self::Item> {
+		loop {
+			if self.s.peek().is_none() || self.u.peek().is_none() {
+				return None
+			}
+			match Ord::cmp(self.s.peek()?.1, self.u.peek()?.1) {
+				std::cmp::Ordering::Less => {
+					self.s.next();
+				}
+				std::cmp::Ordering::Equal => {
+					let s = self.s.next()?;
+					let u = self.u.next()?;
+					return Some(((s.0, u.0), u.1));
+				}
+				std::cmp::Ordering::Greater => {
+					self.u.next();
+				}
+			}
+		}
+	}
+	fn size_hint(&self) -> (usize, Option<usize>) {
+		(0, Some(core::cmp::min(self.s.len(), self.u.len())))
 	}
 }
 

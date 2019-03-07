@@ -35,7 +35,7 @@ pub trait Endorelation : Relation {
 	/// Return `true` if the relation is reflexive.
 	/// A relation is reflexive iff `∀x ∈ X: xRx`
 	fn is_reflexive(&self) -> bool {
-		if !self.is_homogeneous() { return false; }
+		debug_assert!(self.is_homogeneous());
 		self.ixs().all(|i| self.eval_at(i, i))
 	}
 	/// Return `true` if the relation is irreflexive.
@@ -43,18 +43,18 @@ pub trait Endorelation : Relation {
 	///
 	/// aka strict
 	fn is_irreflexive(&self) -> bool {
-		if !self.is_homogeneous() { return false; }
+		debug_assert!(self.is_homogeneous());
 		self.ixs().all(|i| !self.eval_at(i, i))
 	}
 	/// Return `true` if the relation is antisymmetric.
 	/// A relation is antisymmetric iff `∀x,y ∈ X: xRy ∧ yRx ⇒ x = y`
 	fn is_antisymmetric(&self) -> bool {
-		if !self.is_homogeneous() { return false; }
+		debug_assert!(self.is_homogeneous());
 		cross_uniq!(self.ixs(), self.iys()).all(
 			|(ix, iy)| !self.eval_at(ix, iy) || !self.eval_at(iy, ix)
 		)
 		/*
-		if !self.is_homogeneous() { return false; }
+		debug_assert!(self.is_homogeneous());
 		for ix in 1..self.get_domain().0.cardinality() {
 			for iy in 0..ix {
 				if self.eval_at(ix, iy) && self.eval_at(iy, ix) {
@@ -68,7 +68,7 @@ pub trait Endorelation : Relation {
 	/// Return `true` if the relation is transitive.
 	/// A relation is transitive iff `∀x,y,z ∈ X: xRy ∧ yRz ⇒ xRz`
 	fn is_transitive(&self) -> bool {
-		if !self.is_homogeneous() { return false; }
+		debug_assert!(self.is_homogeneous());
 		cross!(self.ixs(), self.iys())
 			.filter(|(ix, iy)| ix != iy)
 			.filter(|(ix, iy)| self.eval_at(*ix, *iy))
@@ -78,7 +78,7 @@ pub trait Endorelation : Relation {
 					.all(|iz| self.eval_at(ix, iz))
 			)
 		/*
-		if !self.is_homogeneous() { return false; }
+		debug_assert!(self.is_homogeneous());
 		for ix in self.ixs() {
 			for iy in self.iys() {
 				if ix == iy { continue; }
@@ -96,7 +96,7 @@ pub trait Endorelation : Relation {
 	/// Return `true` if the relation is symmetric.
 	/// A relation is symmetric iff `∀x,y ∈ X: xRy ⇒ yRx`
 	fn is_symmetric(&self) -> bool {
-		if !self.is_homogeneous() { return false; }
+		debug_assert!(self.is_homogeneous());
 		cross_uniq!(self.ixs(), self.iys()).all(
 			|(ix, iy)| self.eval_at(ix, iy) == self.eval_at(iy, ix)
 		)
@@ -120,7 +120,7 @@ pub trait Endorelation : Relation {
 	///
 	/// aka regular
 	fn is_difunctional(&self) -> bool {
-		if !self.is_homogeneous() { return false; }
+		debug_assert!(self.is_homogeneous());
 		for (ix, iy) in cross!(self.ixs(), self.iys()) {
 			if !self.eval_at(ix, iy) { continue; }
 			for iz in (ix+1)..self.get_domain().0.cardinality() {
@@ -137,7 +137,7 @@ pub trait Endorelation : Relation {
 
 	/// Return `true` if the relation is a lattice.
 	fn is_lattice(&self) -> bool {
-		if !self.is_homogeneous() { return false; } // TODO? Error
+		debug_assert!(self.is_homogeneous());
 		if !self.is_partial_order() { return false; } // TODO? Error
 		// TODO
 		false

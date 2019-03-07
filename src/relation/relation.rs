@@ -143,7 +143,7 @@ pub trait Relation : Clone {
 	/// Return the image of the given set under the relation.
 	///
 	/// Given a relation `R` over the sets `X, Y`,
-	/// the image of the Set `U \subseteq X` under `R` is the set `{ y ∈ Y: ∃x: x ∈ U ∧ xRy }`
+	/// the image of the set `U \subseteq X` under `R` is the set `{ y ∈ Y: ∃x: x ∈ U ∧ xRy }`
 	fn image(&self, set: &Set) -> Set {
 		let intersect = Set::intersection_enumerated(
 			self.get_domain().0,
@@ -161,7 +161,7 @@ pub trait Relation : Clone {
 	/// Return the pre-image of the given set under the relation.
 	///
 	/// Given a relation `R` over the sets `X, Y`,
-	/// the pre-image of the Set `V \subseteq Y` under `R` is the set `{ x ∈ X: ∃y: y ∈ V ∧ xRy }`
+	/// the pre-image of the set `V \subseteq Y` under `R` is the set `{ x ∈ X: ∃y: y ∈ V ∧ xRy }`
 	fn preimage(&self, set: &Set) -> Set {
 		let intersect = Set::intersection_enumerated(
 			self.get_domain().1,
@@ -180,7 +180,7 @@ pub trait Relation : Clone {
 	/// Return the strict image of the given set under the relation.
 	///
 	/// Given a relation `R` over the sets `X, Y`,
-	/// the image of the Set `U \subseteq X` under `R` is the set `{ y ∈ Y: ∀x: x ∈ U → xRy }`
+	/// the image of the set `U \subseteq X` under `R` is the set `{ y ∈ Y: ∀x: x ∈ U → xRy }`
 	fn image_strict(&self, set: &Set) -> Set {
 		let intersect = Set::intersection_enumerated(
 			self.get_domain().0,
@@ -199,7 +199,7 @@ pub trait Relation : Clone {
 	/// Return the strict pre-image of the given set under the relation.
 	///
 	/// Given a relation `R` over the sets `X, Y`,
-	/// the pre-image of the Set `V \subseteq Y` under `R` is the set `{ x ∈ X: ∀y: y ∈ V → xRy }`
+	/// the pre-image of the set `V \subseteq Y` under `R` is the set `{ x ∈ X: ∀y: y ∈ V → xRy }`
 	fn preimage_strict(&self, set: &Set) -> Set {
 		let intersect = Set::intersection_enumerated(
 			self.get_domain().1,
@@ -225,7 +225,7 @@ pub trait Relation : Clone {
 	}
 	/// The concatenation of two relations.
 	///
-	/// `S ; R`, also denoted `R ∘ S` (or `R ∘ S`), defined as `S ; R = { (x, z) | ∃y ∈ Y: (x, y) ∈ R ∧ (y, z) ∈ S }`
+	/// `S ; R`, also denoted `S ∘ R` (or `R ∘ S`), defined as `S ; R = { (x, z) | ∃y ∈ Y: (x, y) ∈ R ∧ (y, z) ∈ S }`
 	fn concatenation<'a, P, Q>(p: &'a P, q: &'a Q) -> Concatenation<'a, P, Q>
 	where P: Relation,
 	      Q: Relation,

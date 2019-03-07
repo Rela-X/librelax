@@ -145,11 +145,11 @@ pub trait Relation : Clone {
 	/// Given a relation `R` over the sets `X, Y`,
 	/// the image of the set `U \subseteq X` under `R` is the set `{ y ∈ Y: ∃x: x ∈ U ∧ xRy }`
 	fn image(&self, set: &Set) -> Set {
-		let intersect = Set::intersection_enumerated(
-			self.get_domain().0,
-			set,
-		);
-		let u: Vec<((usize, usize), &SetElement)> = intersect.collect();
+		debug_assert!(set.is_subset(self.get_domain().0));
+		let u: Vec<((usize, usize), &SetElement)> = Set::intersection_enumerated(
+				self.get_domain().0,
+				set,
+			).collect();
 		self.get_domain().1.iter().enumerate()
 			.filter(
 				|&(iy, _)| u.iter().any(|&((ix, _), _)| self.eval_at(ix, iy))
@@ -163,14 +163,14 @@ pub trait Relation : Clone {
 	/// Given a relation `R` over the sets `X, Y`,
 	/// the pre-image of the set `V \subseteq Y` under `R` is the set `{ x ∈ X: ∃y: y ∈ V ∧ xRy }`
 	fn preimage(&self, set: &Set) -> Set {
-		let intersect = Set::intersection_enumerated(
-			self.get_domain().1,
-			set,
-		);
-		let v: Vec<((usize, usize), &SetElement)> = intersect.collect();
+		debug_assert!(set.is_subset(self.get_domain().0));
+		let v: Vec<((usize, usize), &SetElement)> = Set::intersection_enumerated(
+				self.get_domain().1,
+				set,
+			).collect();
 		self.get_domain().0.iter().enumerate()
 			.filter(
-				|&(ix, _)| v.iter().all(|&((iy, _), _)| self.eval_at(ix, iy))
+				|&(ix, _)| v.iter().any(|&((iy, _), _)| self.eval_at(ix, iy))
 			)
 			.map(|(_, x)| x)
 			.cloned()
@@ -182,11 +182,11 @@ pub trait Relation : Clone {
 	/// Given a relation `R` over the sets `X, Y`,
 	/// the image of the set `U \subseteq X` under `R` is the set `{ y ∈ Y: ∀x: x ∈ U → xRy }`
 	fn image_strict(&self, set: &Set) -> Set {
-		let intersect = Set::intersection_enumerated(
-			self.get_domain().0,
-			set,
-		);
-		let u: Vec<((usize, usize), &SetElement)> = intersect.collect();
+		debug_assert!(set.is_subset(self.get_domain().0));
+		let u: Vec<((usize, usize), &SetElement)> = Set::intersection_enumerated(
+				self.get_domain().0,
+				set,
+			).collect();
 		self.get_domain().1.iter().enumerate()
 			.filter(
 				|&(iy, _)| u.iter().all(|&((ix, _), _)| self.eval_at(ix, iy))
@@ -201,14 +201,14 @@ pub trait Relation : Clone {
 	/// Given a relation `R` over the sets `X, Y`,
 	/// the pre-image of the set `V \subseteq Y` under `R` is the set `{ x ∈ X: ∀y: y ∈ V → xRy }`
 	fn preimage_strict(&self, set: &Set) -> Set {
-		let intersect = Set::intersection_enumerated(
-			self.get_domain().1,
-			set,
-		);
-		let v: Vec<((usize, usize), &SetElement)> = intersect.collect();
+		debug_assert!(set.is_subset(self.get_domain().0));
+		let v: Vec<((usize, usize), &SetElement)> = Set::intersection_enumerated(
+				self.get_domain().1,
+				set,
+			).collect();
 		self.get_domain().0.iter().enumerate()
 			.filter(
-				|&(ix, _)| v.iter().any(|&((iy, _), _)| self.eval_at(ix, iy))
+				|&(ix, _)| v.iter().all(|&((iy, _), _)| self.eval_at(ix, iy))
 			)
 			.map(|(_, x)| x)
 			.cloned()

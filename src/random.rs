@@ -21,7 +21,7 @@ use crate::relation::RelationVec;
 /// use relax::Endorelation;
 /// let s: relax::Set = (1..3).collect();
 /// let r: relax::RelationVec = relax::random::generate_random((s.clone(), s.clone()), 0.0);
-/// assert!(relax::relation::eq(&r, &relax::RelationVec::empty(&s)));
+/// assert!(relax::relation::eq(&r, &relax::RelationVec::empty((&s, &s))));
 /// ```
 ///
 /// `p = 1` creates the universal `Relation`.
@@ -30,7 +30,7 @@ use crate::relation::RelationVec;
 /// use relax::Endorelation;
 /// let s: relax::Set = (1..3).collect();
 /// let r: relax::RelationVec = relax::random::generate_random((s.clone(), s.clone()), 1.0);
-/// assert!(relax::relation::eq(&r, &relax::RelationVec::universal(&s)));
+/// assert!(relax::relation::eq(&r, &relax::RelationVec::universal((&s, &s))));
 /// ```
 pub fn generate_random(domain: (Set, Set), p: f64) -> RelationVec {
 	let d = Bernoulli::new(p);

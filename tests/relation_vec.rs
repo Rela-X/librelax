@@ -187,7 +187,10 @@ fn relation_divisible() {
 #[test]
 fn new_endorelation() {
 	let n8: Vec<u8> = (1..=8).collect();
-	let s8: Set = (1..=8).map(|i| i.to_string()).collect();
+	let s8: (&Set, &Set) = (
+		&(1..=8).map(|i| i.to_string()).collect(),
+		&(1..=8).map(|i| i.to_string()).collect(),
+	);
 	let top = RelationVec::from_predicate(&n8, |(&x, &y)| x >= y);
 	let bot = RelationVec::from_predicate(&n8, |(&x, &y)| x <= y);
 
@@ -196,27 +199,27 @@ fn new_endorelation() {
 			&top,
 			&bot,
 		),
-		&RelationVec::universal(&s8)
+		&RelationVec::universal(s8)
 	));
 	assert!(relation::eq(
 		&RelationVec::intersection(
 			&RelationVec::from_predicate(&n8, |(&x, &y)| x <= y),
 			&RelationVec::from_predicate(&n8, |(&x, &y)| x >= y),
 		),
-		&RelationVec::identity(&s8)
+		&RelationVec::identity(s8)
 	));
 
 	assert!(relation::eq(
 		&RelationVec::union(
 			&RelationVec::complement(&top),
-			&RelationVec::identity(&s8),
+			&RelationVec::identity(s8),
 		),
 		&bot
 	));
 	assert!(relation::eq(
 		&RelationVec::union(
 			&RelationVec::complement(&bot),
-			&RelationVec::identity(&s8),
+			&RelationVec::identity(s8),
 		),
 		&top
 	));
@@ -239,8 +242,8 @@ where R: Endorelation + std::fmt::Debug,
 	let r = a;
 	assert!(r.is_homogeneous());
 
-	let neutral = &R::empty(r.get_domain().0);
-	let absorbing = &R::universal(r.get_domain().0);
+	let neutral = &R::empty(r.get_domain());
+	let absorbing = &R::universal(r.get_domain());
 
 	// union: neutral element
 	assert!(relation::eq(&R::union(r, neutral), r));
@@ -265,8 +268,8 @@ where R: Endorelation + std::fmt::Debug,
 	let r = a;
 	assert!(r.is_homogeneous());
 	
-	let neutral = &R::universal(r.get_domain().0);
-	let absorbing = &R::empty(r.get_domain().0);
+	let neutral = &R::universal(r.get_domain());
+	let absorbing = &R::empty(r.get_domain());
 
 	// intersection: neutral element
 	assert!(relation::eq(&R::intersection(r, neutral), r));
@@ -316,7 +319,10 @@ where R: Relation + std::fmt::Debug
 #[test]
 fn relation_property_test() {
 	let n8: Vec<u8> = (1..=8).collect();
-	let s8: Set = (1..=8).map(|i| i.to_string()).collect();
+	let s8: (&Set, &Set) = (
+		&(1..=8).map(|i| i.to_string()).collect(),
+		&(1..=8).map(|i| i.to_string()).collect(),
+	);
 
 	let div = RelationVec::from_predicate(&n8, |(&x, &y)| y % x == 0);
 	let le = RelationVec::from_predicate(&n8, |(&x, &y)| x <= y);
@@ -333,7 +339,7 @@ fn relation_property_test() {
 		&lt
 	));
 	assert!(relation::eq(
-		&RelationVec::intersection(&RelationVec::identity(&s8), &RelationVec::universal(&s8)),
-		&RelationVec::union(&RelationVec::identity(&s8), &RelationVec::empty(&s8))
+		&RelationVec::intersection(&RelationVec::identity(s8), &RelationVec::universal(s8)),
+		&RelationVec::union(&RelationVec::identity(s8), &RelationVec::empty(s8))
 	));
 }

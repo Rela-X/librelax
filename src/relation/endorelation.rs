@@ -149,21 +149,22 @@ pub trait Endorelation : Relation {
 	}
 
 	/// The empty `Relation E` where `xEy` does not hold for any `(x,y) ∈ X × Y`
-	fn empty(set: &Set) -> Empty<'_> {
-		Empty { set: set }
+	fn empty<'a>(domain: (&'a Set, &'a Set)) -> Empty<'a> {
+		Empty(domain)
 	}
 	/// The universal `Relation U` where `xUy` holds for all `(x,y) ∈ X × Y`
-	fn universal(set: &Set) -> Universal<'_> {
-		Universal { set: set }
+	fn universal<'a>(domain: (&'a Set, &'a Set)) -> Universal<'a> {
+		Universal(domain)
 	}
 	/// The identity `Relation I` where `xIy ⇔ x = y`
-	fn identity(set: &Set) -> Identity<'_> {
-		Identity { set: set }
+	fn identity<'a>(domain: (&'a Set, &'a Set)) -> Identity<'a> {
+		debug_assert_eq!(domain.0, domain.1);
+		Identity(domain.0)
 	}
 
 	/// Reflexive closure: `union(r, id)`
 	fn closure_reflexive<R: Endorelation>(r: &R) -> Union<'_, R, Identity<'_>> {
-		let id = R::identity(r.get_domain().0);
+		let id = R::identity(r.get_domain());
 		return Union::new(r, id);
 	}
 	/// Symmetric closure: `union(r, converse(r))`
@@ -187,13 +188,11 @@ impl<P: Relation, Q: Relation> Endorelation for Union<'_, P, Q> {}
 
 /// The [`Empty`] `Relation`
 #[derive(Clone, Debug)]
-pub struct Empty<'a> {
-	set: &'a Set,
-}
+pub struct Empty<'a>((&'a Set, &'a Set));
 
 impl Relation for Empty<'_> {
 	fn get_domain(&self) -> (&Set, &Set) {
-		(&self.set, &self.set)
+		self.0
 	}
 	fn eval_at(&self, _ix: usize, _iy: usize) -> bool {
 		false
@@ -203,13 +202,11 @@ impl Endorelation for Empty<'_> {}
 
 /// The [`Universal`] `Relation`
 #[derive(Clone, Debug)]
-pub struct Universal<'a> {
-	set: &'a Set,
-}
+pub struct Universal<'a>((&'a Set, &'a Set));
 
 impl Relation for Universal<'_> {
 	fn get_domain(&self) -> (&Set, &Set) {
-		(&self.set, &self.set)
+		self.0
 	}
 	fn eval_at(&self, _ix: usize, _iy: usize) -> bool {
 		true
@@ -219,13 +216,11 @@ impl Endorelation for Universal<'_> {}
 
 /// The [`Identity`] `Relation`
 #[derive(Clone, Debug)]
-pub struct Identity<'a> {
-	set: &'a Set,
-}
+pub struct Identity<'a>(&'a Set);
 
 impl Relation for Identity<'_> {
 	fn get_domain(&self) -> (&Set, &Set) {
-		(&self.set, &self.set)
+		(&self.0, &self.0)
 	}
 	fn eval_at(&self, ix: usize, iy: usize) -> bool {
 		ix == iy

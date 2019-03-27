@@ -58,7 +58,7 @@ impl RelationVec {
 	}
 	/// Calculate the position of (ix, iy) in the `RelationVec`'s `table`.
 	fn get_table_index(&self, ix: usize, iy: usize) -> usize {
-		ix * self.domain.0.cardinality() + iy
+		ix * self.domain.1.cardinality() + iy
 	}
 
 }

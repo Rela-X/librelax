@@ -215,6 +215,15 @@ pub trait Relation : Clone {
 			.collect()
 	}
 
+	/// The empty `Relation E` where `xEy` does not hold for any `(x,y) ∈ X × Y`
+	fn empty<'a>(domain: (&'a Set, &'a Set)) -> Empty<'a> {
+		Empty(domain)
+	}
+	/// The universal `Relation U` where `xUy` holds for all `(x,y) ∈ X × Y`
+	fn universal<'a>(domain: (&'a Set, &'a Set)) -> Universal<'a> {
+		Universal(domain)
+	}
+
 	/// The complement of a relation.
 	///
 	/// `xSy ⇔ not xRy`
@@ -270,6 +279,33 @@ pub fn eq<P: Relation, Q: Relation>(p: &P, q: &Q) -> bool {
 	}
 	return true;
 }
+
+/// The [`Empty`] `Relation`
+#[derive(Clone, Debug)]
+pub struct Empty<'a>((&'a Set, &'a Set));
+
+impl Relation for Empty<'_> {
+	fn get_domain(&self) -> (&Set, &Set) {
+		self.0
+	}
+	fn eval_at(&self, _ix: usize, _iy: usize) -> bool {
+		false
+	}
+}
+
+/// The [`Universal`] `Relation`
+#[derive(Clone, Debug)]
+pub struct Universal<'a>((&'a Set, &'a Set));
+
+impl Relation for Universal<'_> {
+	fn get_domain(&self) -> (&Set, &Set) {
+		self.0
+	}
+	fn eval_at(&self, _ix: usize, _iy: usize) -> bool {
+		true
+	}
+}
+
 
 #[derive(Clone, Debug)]
 pub struct Complement<'a, R: Relation> {

@@ -18,7 +18,7 @@ use crate::relation::RelationVec;
 /// `p = 0` creates the empty `Relation`.
 ///
 /// ```
-/// use relax::Endorelation;
+/// use relax::Relation;
 /// let s: relax::Set = (1..3).collect();
 /// let r: relax::RelationVec = relax::random::generate_random((s.clone(), s.clone()), 0.0);
 /// assert!(relax::relation::eq(&r, &relax::RelationVec::empty((&s, &s))));
@@ -27,7 +27,7 @@ use crate::relation::RelationVec;
 /// `p = 1` creates the universal `Relation`.
 ///
 /// ```
-/// use relax::Endorelation;
+/// use relax::Relation;
 /// let s: relax::Set = (1..3).collect();
 /// let r: relax::RelationVec = relax::random::generate_random((s.clone(), s.clone()), 1.0);
 /// assert!(relax::relation::eq(&r, &relax::RelationVec::universal((&s, &s))));

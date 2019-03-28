@@ -7,7 +7,10 @@ use std;
 
 use crate::set::Set;
 use crate::relation::Relation;
-use crate::relation::relation::{Complement, Concatenation, Converse, Intersection, Union};
+use crate::relation::relation::{
+	Empty, Universal,
+	Complement, Concatenation, Converse, Intersection, Union
+};
 
 /// cross!(1..4, a..d) = (
 /// 	(1,a), (1,b), (1,c),
@@ -148,14 +151,6 @@ pub trait Endorelation : Relation {
 		false
 	}
 
-	/// The empty `Relation E` where `xEy` does not hold for any `(x,y) ∈ X × Y`
-	fn empty<'a>(domain: (&'a Set, &'a Set)) -> Empty<'a> {
-		Empty(domain)
-	}
-	/// The universal `Relation U` where `xUy` holds for all `(x,y) ∈ X × Y`
-	fn universal<'a>(domain: (&'a Set, &'a Set)) -> Universal<'a> {
-		Universal(domain)
-	}
 	/// The identity `Relation I` where `xIy ⇔ x = y`
 	fn identity<'a>(domain: (&'a Set, &'a Set)) -> Identity<'a> {
 		debug_assert_eq!(domain.0, domain.1);
@@ -180,38 +175,7 @@ pub trait Endorelation : Relation {
 	//fn closure_biorder<R: Endorelation>(r: &R) -> R {}
 }
 
-impl<R: Relation> Endorelation for Complement<'_, R> {}
-impl<P: Relation, Q: Relation> Endorelation for Concatenation<'_, P, Q> {}
-impl<R: Relation> Endorelation for Converse<'_, R> {}
-impl<P: Relation, Q: Relation> Endorelation for Intersection<'_, P, Q> {}
-impl<P: Relation, Q: Relation> Endorelation for Union<'_, P, Q> {}
-
-/// The [`Empty`] `Relation`
-#[derive(Clone, Debug)]
-pub struct Empty<'a>((&'a Set, &'a Set));
-
-impl Relation for Empty<'_> {
-	fn get_domain(&self) -> (&Set, &Set) {
-		self.0
-	}
-	fn eval_at(&self, _ix: usize, _iy: usize) -> bool {
-		false
-	}
-}
 impl Endorelation for Empty<'_> {}
-
-/// The [`Universal`] `Relation`
-#[derive(Clone, Debug)]
-pub struct Universal<'a>((&'a Set, &'a Set));
-
-impl Relation for Universal<'_> {
-	fn get_domain(&self) -> (&Set, &Set) {
-		self.0
-	}
-	fn eval_at(&self, _ix: usize, _iy: usize) -> bool {
-		true
-	}
-}
 impl Endorelation for Universal<'_> {}
 
 /// The [`Identity`] `Relation`
@@ -227,6 +191,12 @@ impl Relation for Identity<'_> {
 	}
 }
 impl Endorelation for Identity<'_> {}
+
+impl<R: Relation> Endorelation for Complement<'_, R> {}
+impl<P: Relation, Q: Relation> Endorelation for Concatenation<'_, P, Q> {}
+impl<R: Relation> Endorelation for Converse<'_, R> {}
+impl<P: Relation, Q: Relation> Endorelation for Intersection<'_, P, Q> {}
+impl<P: Relation, Q: Relation> Endorelation for Union<'_, P, Q> {}
 
 mod tests {
 	use super::*;

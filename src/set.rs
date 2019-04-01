@@ -6,7 +6,7 @@ use std::string::ToString;
 /// Implementation of a [`Set`].
 /// Slightly rudimentary at the moment.
 /* HashSet does not implement Hash, so it cannot be nested (currently) */
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, Default, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Set(BTreeSet<SetElement>);
 
 /// A [`SetElement`] is either a [`std::string::String`] or a nested [`Set`].

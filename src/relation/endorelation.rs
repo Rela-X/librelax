@@ -198,15 +198,17 @@ impl<R: Relation> Endorelation for Converse<'_, R> {}
 impl<P: Relation, Q: Relation> Endorelation for Intersection<'_, P, Q> {}
 impl<P: Relation, Q: Relation> Endorelation for Union<'_, P, Q> {}
 
-mod tests {
+#[cfg(test)]
+pub mod tests {
 	use super::*;
+	use crate::relation;
 
-	pub fn relation_property_test<R>(r: &R)
-	where R: Endorelation
+	pub fn endorelation_property_test<R>(r: &R)
+	where R: Endorelation + std::fmt::Debug
 	{
 		assert_eq!(r.is_reflexive() && r.is_irreflexive(), false);
 
-		assert_eq!(r.is_symmetric() && r.is_antisymmetric(), false);
+		assert_eq!(r.is_symmetric() && r.is_asymmetric(), relation::eq(r, &R::empty(r.get_domain())));
 		assert_eq!(r.is_asymmetric(), r.is_irreflexive() && r.is_antisymmetric());
 
 		assert_eq!(r.is_preorder(), r.is_reflexive() && r.is_transitive());

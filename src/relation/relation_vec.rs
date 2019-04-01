@@ -86,6 +86,7 @@ mod tests {
 	use super::*;
 	use crate::set::Set;
 	use crate::relation;
+	use proptest::{prelude::*, collection::vec};
 
 	type Domain = (Set, Set);
 
@@ -303,5 +304,99 @@ mod tests {
 		}
 	}
 
+	/* property tests */
+
+	/// Generates domains ({1,2, ..., n}, {1,2, ..., n})
+	/// with n: [2;32[
+	fn domain_homogeneous() -> impl Strategy<Value = Domain> {
+		// draw a random number n from [2;32[
+		(2..32)
+			// generate a sequence [1;n]
+			.prop_map(|n| (1..n+1))
+			// create a set {1, 2, ..., n}
+			.prop_map(|seq| seq.collect::<Set>())
+			// create a domain-tuple (x, x)
+			.prop_map(|s| (s.clone(), s))
+	}
+
+	/// Generates domains ({1,2, ..., n}, {'a, 'b', ..., ch})
+	/// with n: [2;32[ and ch: ['b';'z']
+	fn domain_heterogeneous() -> impl Strategy<Value = Domain> {
+		// draw random numbers n, c from [2;32[, [2;26[
+		(2..32usize, 2..26usize)
+			// generate sequences [1;n], [0;c]
+			.prop_map(|(n, c)| (1..n+1, 0..c+1))
+			// map n to i32, c to char
+			.prop_map(
+				|(n, c)| (
+					n.map(|n| n as i32),
+					c.map(|c| &ALPHABET[c])
+				)
+			)
+			// create set-tuple
+			.prop_map(
+				|(nseq, cseq)| (
+					nseq.collect::<Set>(), cseq.collect::<Set>()
+				)
+			)
+	}
+
+	fn domain_arbitrary() -> impl Strategy<Value = Domain> {
+		prop_oneof![
+			domain_homogeneous(),
+			domain_heterogeneous(),
+		]
+	}
+
+	fn relation_for_domain(domain: Domain) -> impl Strategy<Value = RelationVec> {
+		let dimension = domain.0.cardinality() * domain.1.cardinality();
+		let domains = Just(domain);
+		let tables = vec(any::<bool>(), dimension);
+		(domains, tables).prop_map(|(d, t)| RelationVec::new(d, t))
+	}
+
+	fn relation_arbitrary(domain: impl Strategy<Value = Domain>) -> impl Strategy<Value = RelationVec> {
+		domain.prop_flat_map(relation_for_domain)
+	}
+
+	prop_compose! {
+		fn three_rels() (d in domain_homogeneous()) (
+			r in relation_for_domain(d.clone()),
+			s in relation_for_domain(d.clone()),
+			t in relation_for_domain(d),
+		) -> (RelationVec, RelationVec, RelationVec) {
+			(r, s, t)
+		}
+	}
+
+	proptest! {
+		#[test]
+		fn relation_properties(r in relation_arbitrary(domain_arbitrary())) {
+			relation::relation::tests::relation_property_test(&r);
+		}
+		#[test]
+		fn endorelation_properties(r in relation_arbitrary(domain_homogeneous())) {
+			relation::endorelation::tests::endorelation_property_test(&r);
+		}
+		#[test]
+		fn endorelation_union((r, s, t) in three_rels()) {
+			relation::relation::tests::union(&r, &s, &t);
+		}
+		#[test]
+		fn endorelation_intersection((r, s, t) in three_rels()) {
+			relation::relation::tests::intersection(&r, &s, &t);
+		}
+		#[test]
+		fn endorelation_distributivity_union_intersection((r, s, t) in three_rels()) {
+			relation::relation::tests::distributivity_union_intersection(&r, &s, &t);
+		}
+		#[test]
+		fn endorelation_distributivity_intersection_union((r, s, t) in three_rels()) {
+			relation::relation::tests::distributivity_intersection_union(&r, &s, &t);
+		}
+		#[test]
+		fn endorelation_de_morgan((r, s, _) in three_rels()) {
+			relation::relation::tests::de_morgan(&r, &s);
+		}
 	}
 }

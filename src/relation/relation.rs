@@ -410,15 +410,115 @@ impl<P: Relation, Q: Relation> Relation for Union<'_, P, Q> {
 	}
 }
 
-mod tests {
+#[cfg(test)]
+pub mod tests {
 	use super::*;
 
 	pub fn relation_property_test<R>(r: &R)
-	where R: Relation
+	where R: Relation + std::fmt::Debug
 	{
 		assert_eq!(r.is_homogeneous(), !r.is_heterogeneous());
 
 		assert_eq!(r.is_bijective(), r.is_injective() && r.is_surjective());
 		assert_eq!(r.is_function(), r.is_functional() && r.is_lefttotal());
+	}
+
+	pub fn union<R, S, T>(a: &R, b: &S, c: &T)
+	where R: Relation + std::fmt::Debug,
+	      S: Relation + std::fmt::Debug,
+	      T: Relation + std::fmt::Debug,
+	{
+		let r = a;
+		assert!(r.is_homogeneous());
+
+		let neutral = &R::empty(r.get_domain());
+		let absorbing = &R::universal(r.get_domain());
+
+		// union: neutral element
+		assert!(eq(&R::union(r, neutral), r));
+		// union: absorbing element
+		assert!(eq(&R::union(r, absorbing), absorbing));
+		// union: idempotence
+		assert!(eq(&R::union(r, r), r));
+		// union: associativity
+		assert!(eq(
+			&R::union(a, &R::union(b, c)),
+			&R::union(&R::union(a, b), c),
+		));
+		// union: commutativity
+		assert!(eq(&R::union(a, b), &R::union(b, a)));
+	}
+
+	pub fn intersection<R, S, T>(a: &R, b: &S, c: &T)
+	where R: Relation + std::fmt::Debug,
+	      S: Relation + std::fmt::Debug,
+	      T: Relation + std::fmt::Debug,
+	{
+		let r = a;
+		assert!(r.is_homogeneous());
+
+		let neutral = &R::universal(r.get_domain());
+		let absorbing = &R::empty(r.get_domain());
+
+		// intersection: neutral element
+		assert!(eq(&R::intersection(r, neutral), r));
+		// intersection: absorbing element
+		assert!(eq(&R::intersection(r, absorbing), absorbing));
+		// intersection: idempotence
+		assert!(eq(&R::intersection(r, r), r));
+		// intersection: associativity
+		assert!(eq(
+			&R::intersection(a, &R::intersection(b, c)),
+			&R::intersection(&R::intersection(a, b), c)
+		));
+		// intersection: commutativity
+		assert!(eq(&R::intersection(a, b), &R::intersection(b, a)));
+	}
+
+	pub fn distributivity_union_intersection<R, S, T>(a: &R, b: &S, c: &T)
+	where R: Relation + std::fmt::Debug,
+	      S: Relation + std::fmt::Debug,
+	      T: Relation + std::fmt::Debug,
+	{
+		// left distributivity of union over intersection
+		assert!(eq(
+			&R::union(a, &R::intersection(b, c)),
+			&R::intersection(&R::union(a, b), &R::union(a, c)),
+		));
+		// right distributivity of union over intersection
+		assert!(eq(
+			&R::union(&R::intersection(a, b), c),
+			&R::intersection(&R::union(a, c), &R::union(b, c)),
+		));
+	}
+
+	pub fn distributivity_intersection_union<R, S, T>(a: &R, b: &S, c: &T)
+	where R: Relation + std::fmt::Debug,
+	      S: Relation + std::fmt::Debug,
+	      T: Relation + std::fmt::Debug,
+	{
+		// left distributivity of intersection over union
+		assert!(eq(
+			&R::intersection(a, &R::union(b, c)),
+			&R::union(&R::intersection(a, b), &R::intersection(a, c)),
+		));
+		// right distributivity of intersection over union
+		assert!(eq(
+			&R::intersection(&R::union(a, b), c),
+			&R::union(&R::intersection(a, c), &R::intersection(b, c)),
+		));
+	}
+
+	pub fn de_morgan<R>(a: &R, b: &R)
+	where R: Relation + std::fmt::Debug
+	{
+		assert!(eq(
+			&R::complement(&R::union(a, b)),
+			&R::intersection(&R::complement(a), &R::complement(b)),
+		));
+		assert!(eq(
+			&R::complement(&R::intersection(a, b)),
+			&R::union(&R::complement(a), &R::complement(b)),
+		));
 	}
 }

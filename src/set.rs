@@ -43,37 +43,6 @@ impl Set {
 	}
 }
 
-impl fmt::Display for Set {
-	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-		write!(f, "{{")?;
-		let mut it = self.0.iter();
-		if let Some(e) = it.next() {
-			write!(f, "{}", e)?;
-			for e in it {
-				write!(f, "{}{}", " ", e)?;
-			}
-		}
-		write!(f, "}}")
-	}
-}
-
-impl<T: Into<SetElement>> iter::FromIterator<T> for Set {
-	fn from_iter<I: iter::IntoIterator<Item = T>>(iter: I) -> Set {
-		let mut s = Set::new();
-		s.0.extend(iter.into_iter().map(T::into));
-		return s;
-	}
-}
-
-impl fmt::Display for SetElement {
-	fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
-		match self {
-			SetElement::Str(s) => write!(f, "{}", s),
-			SetElement::Set(s) => write!(f, "{}", s),
-		}
-	}
-}
-
 #[derive(Clone, Debug)]
 pub struct EnumeratedIntersection<'a> {
 	s: std::iter::Peekable<std::iter::Enumerate<std::collections::btree_set::Iter<'a, SetElement>>>,
@@ -103,6 +72,37 @@ impl<'a> Iterator for EnumeratedIntersection<'a> {
 	}
 	fn size_hint(&self) -> (usize, Option<usize>) {
 		(0, Some(core::cmp::min(self.s.len(), self.u.len())))
+	}
+}
+
+impl fmt::Display for Set {
+	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+		write!(f, "{{")?;
+		let mut it = self.0.iter();
+		if let Some(e) = it.next() {
+			write!(f, "{}", e)?;
+			for e in it {
+				write!(f, "{}{}", " ", e)?;
+			}
+		}
+		write!(f, "}}")
+	}
+}
+
+impl<T: Into<SetElement>> iter::FromIterator<T> for Set {
+	fn from_iter<I: iter::IntoIterator<Item = T>>(iter: I) -> Set {
+		let mut s = Set::new();
+		s.0.extend(iter.into_iter().map(T::into));
+		return s;
+	}
+}
+
+impl fmt::Display for SetElement {
+	fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+		match self {
+			SetElement::Str(s) => write!(f, "{}", s),
+			SetElement::Set(s) => write!(f, "{}", s),
+		}
 	}
 }
 

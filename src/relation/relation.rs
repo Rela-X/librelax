@@ -335,7 +335,10 @@ pub struct Concatenation<'a, P: Relation, Q: Relation> {
 
 impl<'a, P: Relation, Q: Relation> Concatenation<'a, P, Q> {
 	pub fn new<S: Into<LCow<'a, P>>, T: Into<LCow<'a, Q>>>(s: S, t: T) -> Self {
-		Concatenation { p: s.into(), q: t.into() }
+		let p = s.into();
+		let q = t.into();
+		debug_assert_eq!(p.get_domain().1, q.get_domain().0);
+		Concatenation { p, q }
 	}
 }
 

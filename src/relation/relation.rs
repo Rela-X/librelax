@@ -361,7 +361,7 @@ impl<'a, R: Relation> Converse<'a, R> {
 
 impl<R: Relation> Relation for Converse<'_, R> {
 	fn get_domain(&self) -> (&Set, &Set) {
-		self.r.get_domain()
+		(self.r.get_domain().1, self.r.get_domain().0)
 	}
 	fn eval_at(&self, ix: usize, iy: usize) -> bool {
 		self.r.eval_at(iy, ix)

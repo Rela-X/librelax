@@ -427,6 +427,85 @@ pub mod tests {
 		assert_eq!(r.is_function(), r.is_functional() && r.is_lefttotal());
 	}
 
+	pub fn complement<R>(r: &R)
+	where R: Relation + std::fmt::Debug
+	{
+		// involutivity
+		assert!(eq(&R::complement(&R::complement(r)), r));
+	}
+
+	pub fn concatenation<R, S, T>(a: &R, b: &S, c: &T)
+	where R: Relation + std::fmt::Debug,
+	      S: Relation + std::fmt::Debug,
+	      T: Relation + std::fmt::Debug,
+	{
+		debug_assert_eq!(a.get_domain().1, b.get_domain().0);
+		debug_assert_eq!(b.get_domain().1, c.get_domain().0);
+
+		let r = a;
+
+//		let neutral_left  = &R::identity(r.get_domain().0);
+//		let neutral_right = &R::identity(r.get_domain().1);
+		let absorbing = &R::empty(r.get_domain());
+
+		// concatenation: neutral element
+//		assert!(eq(&R::concatenation(neutral_left, r), r));
+//		assert!(eq(&R::concatenation(r, neutral_right), r));
+		// concatenation: absorbing element
+		assert!(eq(&R::concatenation(r, absorbing), absorbing));
+		// concatenation: associativity
+		assert!(eq(
+			&R::concatenation(a, &R::concatenation(b, c)),
+			&R::concatenation(&R::concatenation(a, b), c),
+		));
+		// concatenation: no commutativity
+	}
+
+	pub fn distributivity_concatenation<R, S, T>(a: &R, b: &S, c: &T)
+	where R: Relation + std::fmt::Debug,
+	      S: Relation + std::fmt::Debug,
+	      T: Relation + std::fmt::Debug,
+	{
+		// left distributivity of concatenation over union
+		assert!(eq(
+			&R::concatenation(a, &R::union(b, c)),
+			&R::union(&R::concatenation(a, b), &R::concatenation(a, c)),
+		));
+		// right distributivity of concatenation over union
+		assert!(eq(
+			&R::concatenation(&R::union(a, b), c),
+			&R::union(&R::concatenation(a, c), &R::concatenation(b, c)),
+		));
+	}
+
+	pub fn converse<R>(r: &R)
+	where R: Relation + std::fmt::Debug
+	{
+		// involutivity
+		assert!(eq(&R::converse(&R::converse(r)), r));
+	}
+
+	pub fn distributivity_converse<R, S>(a: &R, b: &S)
+	where R: Relation + std::fmt::Debug,
+	      S: Relation + std::fmt::Debug,
+	{
+		// antidistributivity of converse over concatenation
+		assert!(eq(
+			&R::converse(&R::concatenation(a, b)),
+			&R::concatenation(&R::converse(b), &R::converse(a)),
+		));
+		// distributivity of converse over union
+		assert!(eq(
+			&R::converse(&R::union(a, b)),
+			&R::union(&R::converse(a), &R::converse(b)),
+		));
+		// distributivity of converse over intersection
+		assert!(eq(
+			&R::converse(&R::intersection(a, b)),
+			&R::intersection(&R::converse(a), &R::converse(b)),
+		));
+	}
+
 	pub fn union<R, S, T>(a: &R, b: &S, c: &T)
 	where R: Relation + std::fmt::Debug,
 	      S: Relation + std::fmt::Debug,
@@ -479,7 +558,7 @@ pub mod tests {
 		assert!(eq(&R::intersection(a, b), &R::intersection(b, a)));
 	}
 
-	pub fn distributivity_union_intersection<R, S, T>(a: &R, b: &S, c: &T)
+	pub fn distributivity_union<R, S, T>(a: &R, b: &S, c: &T)
 	where R: Relation + std::fmt::Debug,
 	      S: Relation + std::fmt::Debug,
 	      T: Relation + std::fmt::Debug,
@@ -496,7 +575,7 @@ pub mod tests {
 		));
 	}
 
-	pub fn distributivity_intersection_union<R, S, T>(a: &R, b: &S, c: &T)
+	pub fn distributivity_intersection<R, S, T>(a: &R, b: &S, c: &T)
 	where R: Relation + std::fmt::Debug,
 	      S: Relation + std::fmt::Debug,
 	      T: Relation + std::fmt::Debug,

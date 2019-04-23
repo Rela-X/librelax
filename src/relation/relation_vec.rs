@@ -375,28 +375,51 @@ mod tests {
 			relation::relation::tests::relation_property_test(&r);
 		}
 		#[test]
-		fn endorelation_properties(r in relation_arbitrary(domain_homogeneous())) {
-			relation::endorelation::tests::endorelation_property_test(&r);
+		fn relation_complement(r in relation_arbitrary(domain_arbitrary())) {
+			relation::relation::tests::complement(&r);
 		}
 		#[test]
-		fn endorelation_union((r, s, t) in three_rels()) {
+		fn relation_concatenation((r, s, t) in three_rels()) {
+			relation::relation::tests::concatenation(&r, &s, &t);
+		}
+		#[test]
+		fn relation_distributivity_concatenation((r, s, t) in three_rels()) {
+			relation::relation::tests::distributivity_concatenation(&r, &s, &t);
+		}
+		#[test]
+		fn relation_converse(r in relation_arbitrary(domain_arbitrary())) {
+			relation::relation::tests::converse(&r);
+		}
+		#[test]
+		fn relation_distributivity_converse((r, s, _) in three_rels()) {
+			relation::relation::tests::distributivity_converse(&r, &s);
+		}
+		#[test]
+		fn relation_union((r, s, t) in three_rels()) {
 			relation::relation::tests::union(&r, &s, &t);
 		}
 		#[test]
-		fn endorelation_intersection((r, s, t) in three_rels()) {
+		fn relation_intersection((r, s, t) in three_rels()) {
 			relation::relation::tests::intersection(&r, &s, &t);
 		}
 		#[test]
-		fn endorelation_distributivity_union_intersection((r, s, t) in three_rels()) {
-			relation::relation::tests::distributivity_union_intersection(&r, &s, &t);
+		fn relation_distributivity_union((r, s, t) in three_rels()) {
+			relation::relation::tests::distributivity_union(&r, &s, &t);
 		}
 		#[test]
-		fn endorelation_distributivity_intersection_union((r, s, t) in three_rels()) {
-			relation::relation::tests::distributivity_intersection_union(&r, &s, &t);
+		fn relation_distributivity_intersection((r, s, t) in three_rels()) {
+			relation::relation::tests::distributivity_intersection(&r, &s, &t);
 		}
 		#[test]
-		fn endorelation_de_morgan((r, s, _) in three_rels()) {
+		fn relation_de_morgan((r, s, _) in three_rels()) {
 			relation::relation::tests::de_morgan(&r, &s);
+		}
+	}
+
+	proptest! {
+		#[test]
+		fn endorelation_properties(r in relation_arbitrary(domain_homogeneous())) {
+			relation::endorelation::tests::endorelation_property_test(&r);
 		}
 	}
 }

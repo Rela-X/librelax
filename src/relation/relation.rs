@@ -341,10 +341,11 @@ impl<'a, P: Relation, Q: Relation> Concatenation<'a, P, Q> {
 
 impl<P: Relation, Q: Relation> Relation for Concatenation<'_, P, Q> {
 	fn get_domain(&self) -> (&Set, &Set) {
-		self.p.get_domain()
+		(self.p.get_domain().0, self.q.get_domain().1)
 	}
-	fn eval_at(&self, ix: usize, iy: usize) -> bool {
-		self.p.eval_at(ix, iy) && (self.q.iys()).any(|iz| self.q.eval_at(iy, iz))
+	fn eval_at(&self, ix: usize, iz: usize) -> bool {
+		// p.iys() == q.ixs()
+		self.p.iys().any(|iy| self.p.eval_at(ix, iy) && self.q.eval_at(iy, iz))
 	}
 }
 

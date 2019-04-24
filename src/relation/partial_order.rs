@@ -89,3 +89,43 @@ impl<P: Relation, Q: Relation> PartialOrder for Concatenation<'_, P, Q> {}
 impl<R: Relation> PartialOrder for Converse<'_, R> {}
 impl<P: Relation, Q: Relation> PartialOrder for Intersection<'_, P, Q> {}
 impl<P: Relation, Q: Relation> PartialOrder for Union<'_, P, Q> {}
+
+#[cfg(test)]
+pub mod tests {
+	use super::*;
+
+	pub fn partial_order_property_test<PO>(po: &PO)
+	where PO: PartialOrder + std::fmt::Debug
+	{
+//		assert_eq!(po.upset(???), po.image(???));
+//		assert_eq!(po.down(???), po.preimage(???));
+
+		// TODO [MÜLLER]
+		let r = PO::closure_reflexive(po);
+		for x in r.get_domain().0.iter() {
+			assert!(r.upset(x).contains(x) || r.downset(x).contains(x));
+		}
+
+		/*
+		for x in po.get_domain().0 {
+			po.bound_upper(Set::new(x)) == po.upset(x)
+			po.bound_lower(Set::new(x)) == po.downset(x)
+		}
+		*/
+		let emptyset = Set::new();
+		assert_eq!(&po.bound_upper(&emptyset), po.get_domain().0);
+		assert_eq!(&po.bound_lower(&emptyset), po.get_domain().0);
+		/*
+		for x in po.get_domain().0 {
+			po.upset(x) == ?::converse(po).downset(x)
+			po.downset(x) == ?::converse(po).upset(x)
+		}
+		*/
+
+		/*
+		upr(u) <= upr(lwr(u))
+		upr(u ∪ v) == upr(u) ∩ upr(v)
+		upr(upr(u)) <= upr(u)
+		*/
+	}
+}

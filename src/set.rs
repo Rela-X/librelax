@@ -26,6 +26,9 @@ impl Set {
 	pub fn iter(&self) -> ::std::collections::btree_set::Iter<SetElement> {
 		self.0.iter()
 	}
+	pub fn contains(&self, e: &SetElement) -> bool {
+		self.0.contains(e)
+	}
 	pub fn is_subset(&self, other: &Set) -> bool {
 		self.0.is_subset(&other.0)
 	}

@@ -138,19 +138,6 @@ pub trait Endorelation : Relation {
 		return true;
 	}
 
-	/// Return `true` if the relation is a lattice.
-	fn is_lattice(&self) -> bool {
-		debug_assert!(self.is_homogeneous());
-		if !self.is_partial_order() { return false; } // TODO? Error
-		// TODO
-		false
-	}
-	/// Return `true` if the relation is a sublattice.
-	fn is_sublattice<T: Endorelation>(&self, other: &T) -> bool {
-		// TODO
-		false
-	}
-
 	/// The identity `Relation I` where `xIy ⇔ x = y`
 	fn identity<'a>(domain: (&'a Set, &'a Set)) -> Identity<'a> {
 		debug_assert_eq!(domain.0, domain.1);

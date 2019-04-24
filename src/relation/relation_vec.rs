@@ -5,7 +5,7 @@ use std::fmt;
 use std::string::ToString;
 
 use crate::set::Set;
-use crate::relation::{Relation, Endorelation};
+use crate::relation::{Relation, Endorelation, PartialOrder};
 
 /// A binary `Relation`, represented as a `std::vec::Vec` of `bool`ean values.
 /// Values are storen row-wise, as shown in the following example, to form an
@@ -75,6 +75,8 @@ impl Relation for RelationVec {
 }
 
 impl Endorelation for RelationVec {}
+
+impl PartialOrder for RelationVec {}
 
 impl fmt::Display for RelationVec {
 	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

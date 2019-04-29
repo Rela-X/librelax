@@ -28,8 +28,8 @@ impl RelationVec {
 	/// Create a new [`RelationVec`] from the given domain and and incidence matrix.
 	pub fn new(domain: (Set, Set), table: Vec<bool>) -> Self {
 		RelationVec {
-			domain: domain,
-			table: table,
+			domain,
+			table,
 		}
 	}
 	/// Create a new [`RelationVec`] from the given `Relation`.
@@ -43,7 +43,7 @@ impl RelationVec {
 				.collect(),
 		}
 	}
-	pub fn from_predicate<'a, T, P>(set: &'a[T], predicate: P) -> Self
+	pub fn from_predicate<T, P>(set: &[T], predicate: P) -> Self
 	where T: ToString,
 	      P: FnMut((&T, &T)) -> bool,
 	{

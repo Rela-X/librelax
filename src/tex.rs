@@ -41,21 +41,21 @@ impl<R: Relation> ToTex<R> for R {
 impl<R: Relation> fmt::Display for TeXWrapper<'_, R> {
 	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 		let table_width = self.0.get_domain().0.cardinality();
-		write!(f, "{}", r"\begin{array}")?;
+		write!(f, r"\begin{{array}}")?;
 		writeln!(f, "{{c|{:c^width$}}}", "", width = table_width)?;
 		for y in self.0.get_domain().1.iter() {
 			write!(f, " & {}", y)?;
 		}
-		write!(f, " {}", r"\hline")?;
+		write!(f, r" \hline")?;
 		let fn_eval = |(ix, iy)| self.0.eval_at(ix, iy);
 		for (ix, x) in self.0.get_domain().0.iter().enumerate() {
-			writeln!(f, " {}", r"\\")?;
+			writeln!(f, r" \\")?;
 			write!(f, "{}", x)?;
 			for b in iter::repeat(ix).zip(self.0.iys()).map(fn_eval) {
 				write!(f, " & {}", if b { r"\true " } else { r"\false" })?;
 			}
 		}
-		writeln!(f, "")?;
-		write!(f, "{}", r"\end{array}")
+		writeln!(f)?;
+		write!(f, r"\end{{array}}")
 	}
 }

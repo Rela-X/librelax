@@ -27,6 +27,7 @@ pub struct RelationVec {
 impl RelationVec {
 	/// Create a new [`RelationVec`] from the given domain and and incidence matrix.
 	pub fn new(domain: (Set, Set), table: Vec<bool>) -> Self {
+		assert!(domain.0.cardinality() * domain.1.cardinality() == table.len());
 		RelationVec {
 			domain,
 			table,

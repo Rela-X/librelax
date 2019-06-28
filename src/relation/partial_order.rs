@@ -1,3 +1,7 @@
+//! A partial order.
+//!
+//! This modue contains the `PartialOrder` type.
+
 use crate::set::{Set, SetElement};
 use crate::relation::Relation;
 use crate::relation::Endorelation;
@@ -56,12 +60,14 @@ pub trait PartialOrder : Endorelation {
 		debug_assert!(u.is_subset(self.get_domain().0));
 		Set::intersection(&self.bound_lower(u), u).cloned().collect()
 	}
+	/// Return the set of smallest upper boundaries.
 	/// sup_R(u) := sml_R(upr_R(u))
 	fn supremum(&self, u: &Set) -> Set {
 		debug_assert!(self.is_partial_order());
 		debug_assert!(u.is_subset(self.get_domain().0));
 		self.elements_smallest(&self.bound_upper(u))
 	}
+	/// Return the set of greatest lower boundaries.
 	/// inf_R(u) := grt_R(lwr_R(u))
 	fn infimum(&self, u: &Set) -> Set {
 		debug_assert!(self.is_partial_order());

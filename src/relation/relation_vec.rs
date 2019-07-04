@@ -62,6 +62,10 @@ impl RelationVec {
 		ix * self.domain.1.cardinality() + iy
 	}
 
+	pub fn get_table(&self) -> &Vec<bool> {
+		&self.table
+	}
+
 }
 
 impl Relation for RelationVec {

@@ -78,7 +78,18 @@ impl Endorelation for RelationVec {}
 
 impl fmt::Display for RelationVec {
 	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-		write!(f, "[TODO] fmt::Display for RelationVec :)")
+		write!(f, "{}", self.domain.0)?;
+		write!(f, " x ")?;
+		write!(f, "{}", self.domain.1)?;
+		writeln!(f, " :")?;
+		for ix in 0..self.domain.0.cardinality() {
+			write!(f, "|")?;
+			for iy in 0..self.domain.1.cardinality() {
+				write!(f, "{}", if self.eval_at(ix, iy) { 1 } else { 0 })?;
+			}
+			writeln!(f, "|")?;
+		}
+		Ok(())
 	}
 }
 

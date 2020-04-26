@@ -35,13 +35,18 @@ impl RelationVec {
 	}
 	/// Create a new [`RelationVec`] from the given `Relation`.
 	pub fn from_relation<R: Relation>(r: &R) -> Self {
-		let d = r.get_domain();
+		let (set1, set2) = r.get_domain();
+		let mut table: Vec<bool> = Vec::with_capacity(set1.cardinality() * set2.cardinality());
+
+		for ix in 0..set1.cardinality() {
+			for iy in 0..set2.cardinality() {
+				table.push(r.eval_at(ix, iy))
+			}
+		}
+
 		RelationVec {
-			domain: (d.0.clone(), d.1.clone()),
-			table: (0..(d.0.cardinality() * d.1.cardinality()))
-				.map(|i| (i / d.0.cardinality(), i % d.1.cardinality()))
-				.map(|(ix, iy)| r.eval_at(ix, iy))
-				.collect(),
+			domain: (set1.clone(), set2.clone()),
+			table,
 		}
 	}
 	pub fn from_predicate<T, P>(set: &[T], predicate: P) -> Self
@@ -382,6 +387,10 @@ mod tests {
 	}
 
 	proptest! {
+		#[test]
+		fn new_from_relation(r in relation_arbitrary(domain_arbitrary())) {
+			assert_eq!(RelationVec::from_relation(&r), r);
+		}
 		#[test]
 		fn relation_properties(r in relation_arbitrary(domain_arbitrary())) {
 			relation::relation::tests::relation_property_test(&r);
